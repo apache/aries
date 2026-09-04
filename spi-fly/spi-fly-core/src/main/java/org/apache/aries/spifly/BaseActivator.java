@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -42,9 +43,13 @@ import java.util.logging.Logger;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.namespace.HostNamespace;
+import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
+import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.util.tracker.BundleTracker;
 
 import aQute.bnd.header.Parameters;
@@ -52,19 +57,31 @@ import aQute.bnd.stream.MapStream;
 import aQute.libg.glob.Glob;
 
 public abstract class BaseActivator implements BundleActivator {
+    private static final String PROCESSED_REQUIRE_CAPABILITY_HEADER =
+            "X-SpiFly-Processed-Require-Capability";
     private static final Set<WeavingData> NON_WOVEN_BUNDLE = Collections.emptySet();
     private static final Logger logger = Logger.getLogger(BaseActivator.class.getName());
 
     // Static access to the activator used by the woven code, therefore
     // this bundle must be a singleton.
     // TODO see if we can get rid of the static access.
-    public static BaseActivator activator;
+    public static volatile BaseActivator activator;
+
+    /*
+     * A ServiceLoader is lazy, so clearing activator alone is not sufficient:
+     * a loader created before stop could otherwise discover or instantiate a
+     * provider after this mediator instance has stopped. Each activation gets
+     * a distinct token which is captured by the class loaders backing that
+     * ServiceLoader view.
+     */
+    private volatile Object activeSession = new Object();
 
     private BundleContext bundleContext;
     @SuppressWarnings("rawtypes")
     private BundleTracker consumerBundleTracker;
     @SuppressWarnings("rawtypes")
     private BundleTracker providerBundleTracker;
+    private ProviderBundleTrackerCustomizer providerBundleTrackerCustomizer;
     private Optional<Parameters> autoConsumerInstructions;
     private Optional<Parameters> autoProviderInstructions;
 
@@ -74,8 +91,25 @@ public abstract class BaseActivator implements BundleActivator {
     private final ConcurrentMap<String, SortedMap<Long, Pair<Bundle, Map<String, Object>>>> registeredProviders =
             new ConcurrentHashMap<String, SortedMap<Long, Pair<Bundle, Map<String, Object>>>>();
 
+    private final ConcurrentMap<String, SortedMap<Long, ProviderAdvertisement>> providerAdvertisements =
+            new ConcurrentHashMap<String, SortedMap<Long, ProviderAdvertisement>>();
+
     private final ConcurrentMap<Bundle, Map<ConsumerRestriction, List<BundleDescriptor>>> consumerRestrictions =
             new ConcurrentHashMap<Bundle, Map<ConsumerRestriction, List<BundleDescriptor>>>();
+
+    private final ConcurrentMap<Bundle, StandardConsumerWiring> standardConsumerWirings =
+            new ConcurrentHashMap<Bundle, StandardConsumerWiring>();
+
+    private final Set<Pair<Bundle, BundleRevision>> requestedConsumerRefreshes =
+            Collections.newSetFromMap(
+                    new ConcurrentHashMap<Pair<Bundle, BundleRevision>, Boolean>());
+
+    private final ConcurrentMap<Bundle, Set<Bundle>> consumersByProvider =
+            new ConcurrentHashMap<Bundle, Set<Bundle>>();
+
+    private final Set<Bundle> requestedProviderStopRefreshes =
+            Collections.newSetFromMap(
+                    new ConcurrentHashMap<Bundle, Boolean>());
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public synchronized void start(BundleContext context, final String consumerHeaderName) throws Exception {
@@ -94,8 +128,10 @@ public abstract class BaseActivator implements BundleActivator {
             log(Level.FINE, t.getMessage(), t);
         }
 
+        providerBundleTrackerCustomizer =
+                new ProviderBundleTrackerCustomizer(this, context.getBundle());
         providerBundleTracker = new BundleTracker(context,
-                Bundle.ACTIVE | Bundle.STARTING, new ProviderBundleTrackerCustomizer(this, context.getBundle()));
+                Bundle.ACTIVE | Bundle.STARTING, providerBundleTrackerCustomizer);
         providerBundleTracker.open();
 
         consumerBundleTracker = new BundleTracker(context,
@@ -106,7 +142,12 @@ public abstract class BaseActivator implements BundleActivator {
             addConsumerWeavingData(bundle, consumerHeaderName);
         }
 
+        activeSession = new Object();
         activator = this;
+
+        if (SpiFlyConstants.SPI_CONSUMER_HEADER.equals(consumerHeaderName)) {
+            refreshActiveConsumers();
+        }
     }
 
     public void addConsumerWeavingData(Bundle bundle, String consumerHeaderName) throws Exception {
@@ -115,17 +156,49 @@ public abstract class BaseActivator implements BundleActivator {
             return;
         }
 
+        Bundle mediatorBundle = bundleContext == null ? null : bundleContext.getBundle();
+        List<String> proprietaryHeaders = getAllHeaders(consumerHeaderName, bundle);
+        boolean directRequirementCompatibility =
+                SpiFlyConstants.REQUIRE_CAPABILITY.equals(consumerHeaderName);
+        boolean standardCandidate = proprietaryHeaders.isEmpty()
+                && !directRequirementCompatibility;
+        BundleWiring wiring = mediatorBundle == null || !standardCandidate
+                ? null : WiringUtils.getWiring(bundle);
+        boolean staticMediator = SpiFlyConstants.PROCESSED_SPI_CONSUMER_HEADER.equals(consumerHeaderName);
+        boolean processedStandardBundle = !staticMediator
+                || !getAllHeaders(PROCESSED_REQUIRE_CAPABILITY_HEADER, bundle).isEmpty();
+
+        if (mediatorBundle != null && processedStandardBundle
+                && WiringUtils.isWiredToExtender(
+                        wiring, mediatorBundle, SpiFlyConstants.PROCESSOR_EXTENDER_NAME)) {
+            registerStandardConsumer(bundle, wiring);
+            return;
+        }
+
+        // Older statically woven bundles had their processor requirement removed. Keep them
+        // working as an explicitly separate compatibility path, but use their remaining resolved
+        // ServiceLoader wires instead of reapplying the saved requirement filters.
+        boolean legacyStaticBundle = staticMediator
+                && !getAllHeaders(PROCESSED_REQUIRE_CAPABILITY_HEADER, bundle).isEmpty()
+                && getAllHeaders(SpiFlyConstants.REQUIRE_CAPABILITY, bundle).stream()
+                        .noneMatch(header -> header.contains(SpiFlyConstants.PROCESSOR_EXTENDER_NAME));
+        if (legacyStaticBundle) {
+            registerStandardConsumer(bundle, wiring);
+            return;
+        }
+
+        // A statically woven standard consumer will call Util even when its processor
+        // requirement resolves to another mediator. Record an explicit deny state so
+        // those calls cannot fall through to the unrestricted compatibility path.
+        if (staticMediator && processedStandardBundle && standardCandidate) {
+            standardConsumerWirings.put(bundle, StandardConsumerWiring.denied());
+        }
+
         Map<String, List<String>> allHeaders = new HashMap<String, List<String>>();
-        Set<String> addedHeaders = new HashSet<String>();
-        List<String> added = allHeaders.put(consumerHeaderName, getAllHeaders(consumerHeaderName, bundle));
-        if (added != null) {
-            added.stream().forEach(addedHeaders::add);
+        if (!proprietaryHeaders.isEmpty()) {
+            allHeaders.put(consumerHeaderName, proprietaryHeaders);
         }
-        added = allHeaders.put(SpiFlyConstants.REQUIRE_CAPABILITY, getAllHeaders(SpiFlyConstants.REQUIRE_CAPABILITY, bundle));
-        if (added != null) {
-            added.stream().forEach(addedHeaders::add);
-        }
-        if (addedHeaders.isEmpty()) {
+        else {
             getAutoConsumerInstructions().map(Parameters::stream).orElseGet(MapStream::empty).filterKey(
                 i -> Glob.toPattern(i).asPredicate().test(bundle.getSymbolicName())
             ).findFirst().ifPresent(
@@ -153,6 +226,16 @@ public abstract class BaseActivator implements BundleActivator {
         } else {
             bundleWeavingData.put(bundle, NON_WOVEN_BUNDLE);
         }
+    }
+
+    void registerStandardConsumer(Bundle bundle, BundleWiring wiring) {
+        Set<WeavingData> weavingData = ConsumerHeaderProcessor.createServiceLoaderWeavingData();
+        standardConsumerWirings.put(bundle, StandardConsumerWiring.from(wiring));
+        bundleWeavingData.put(bundle, Collections.unmodifiableSet(weavingData));
+    }
+
+    boolean isStandardConsumer(Bundle bundle) {
+        return standardConsumerWirings.containsKey(bundle);
     }
 
     private List<String> getAllHeaders(String headerName, Bundle bundle) {
@@ -183,14 +266,243 @@ public abstract class BaseActivator implements BundleActivator {
     public void removeWeavingData(Bundle bundle) {
         bundleWeavingData.remove(bundle);
         consumerRestrictions.remove(bundle);
+        standardConsumerWirings.remove(bundle);
+    }
+
+    void fragmentAttached(Bundle fragment, String consumerHeaderName) throws Exception {
+        BundleWiring fragmentWiring = WiringUtils.getWiring(fragment);
+        if (fragmentWiring == null) {
+            return;
+        }
+
+        for (BundleWire hostWire : fragmentWiring.getRequiredWires(
+                HostNamespace.HOST_NAMESPACE)) {
+            BundleWiring hostWiring = hostWire.getProviderWiring();
+            Bundle host = hostWiring == null ? null : hostWiring.getBundle();
+            if (host == null) {
+                continue;
+            }
+
+            if (providerBundleTracker != null && providerBundleTrackerCustomizer != null) {
+                Object registrations = providerBundleTracker.getObject(host);
+                if (registrations != null) {
+                    providerBundleTrackerCustomizer.reprocessBundle(host, registrations);
+                }
+            }
+
+            if (consumerBundleTracker != null && consumerBundleTracker.getObject(host) != null) {
+                reprocessConsumerHost(host, fragmentWiring.getRevision(), consumerHeaderName);
+            }
+        }
+    }
+
+    void reprocessConsumerHost(Bundle host, BundleRevision fragmentRevision,
+            String consumerHeaderName) throws Exception {
+        boolean wasStandardConsumer = isStandardConsumer(host);
+        removeWeavingData(host);
+        addConsumerWeavingData(host, consumerHeaderName);
+
+        if (SpiFlyConstants.SPI_CONSUMER_HEADER.equals(consumerHeaderName)
+                && !wasStandardConsumer && isStandardConsumer(host)) {
+            refreshConsumerHost(host, fragmentRevision);
+        }
+    }
+
+    private void refreshConsumerHost(Bundle host, BundleRevision fragmentRevision) {
+        if (fragmentRevision == null) {
+            return;
+        }
+        requestConsumerRefreshes(
+                Collections.singleton(new Pair<Bundle, BundleRevision>(host, fragmentRevision)),
+                "after processor fragment attachment");
+    }
+
+    void refreshActiveConsumers() {
+        if (bundleContext == null) {
+            return;
+        }
+
+        Bundle mediatorBundle = bundleContext.getBundle();
+        List<Pair<Bundle, BundleRevision>> refreshes =
+                new ArrayList<Pair<Bundle, BundleRevision>>();
+        for (Bundle bundle : bundleContext.getBundles()) {
+            int state = bundle.getState();
+            if ((state & (Bundle.ACTIVE | Bundle.STARTING)) == 0
+                    || bundle.equals(mediatorBundle)
+                    || !isStandardConsumer(bundle)) {
+                continue;
+            }
+
+            BundleRevision revision = bundle.adapt(BundleRevision.class);
+            if (revision == null
+                    || (revision.getTypes() & BundleRevision.TYPE_FRAGMENT) != 0) {
+                continue;
+            }
+            refreshes.add(new Pair<Bundle, BundleRevision>(bundle, revision));
+        }
+
+        Collections.sort(refreshes, (left, right) -> Long.compare(
+                left.getLeft().getBundleId(), right.getLeft().getBundleId()));
+        requestConsumerRefreshes(refreshes, "after dynamic mediator startup");
+    }
+
+    void recordProviderUse(Bundle consumer, Bundle provider, Object session) {
+        if (!isSessionActive(session) || consumer == null || provider == null
+                || !isStandardConsumer(consumer)) {
+            return;
+        }
+        consumersByProvider.computeIfAbsent(provider,
+                key -> Collections.newSetFromMap(
+                        new ConcurrentHashMap<Bundle, Boolean>())).add(consumer);
+    }
+
+    void forgetConsumerProviderUses(Bundle consumer) {
+        for (Map.Entry<Bundle, Set<Bundle>> entry : consumersByProvider.entrySet()) {
+            Set<Bundle> consumers = entry.getValue();
+            consumers.remove(consumer);
+            if (consumers.isEmpty()) {
+                consumersByProvider.remove(entry.getKey(), consumers);
+            }
+        }
+    }
+
+    void providerBundleStopped(Bundle provider) {
+        Object session = getActiveSession();
+        if (!isSessionActive(session)) {
+            return;
+        }
+        int state = provider.getState();
+        if ((state & (Bundle.ACTIVE | Bundle.STARTING)) != 0) {
+            return;
+        }
+
+        Set<Bundle> consumers = consumersByProvider.remove(provider);
+        if (consumers == null || consumers.isEmpty()) {
+            return;
+        }
+
+        List<Bundle> refreshes = new ArrayList<Bundle>();
+        for (Bundle consumer : consumers) {
+            int consumerState = consumer.getState();
+            BundleRevision revision = consumer.adapt(BundleRevision.class);
+            if ((consumerState & (Bundle.ACTIVE | Bundle.STARTING)) != 0
+                    && isStandardConsumer(consumer)
+                    && revision != null
+                    && (revision.getTypes() & BundleRevision.TYPE_FRAGMENT) == 0) {
+                refreshes.add(consumer);
+            }
+        }
+        Collections.sort(refreshes, (left, right) -> Long.compare(
+                left.getBundleId(), right.getBundleId()));
+        requestProviderStopRefreshes(refreshes, provider);
+    }
+
+    private void requestProviderStopRefreshes(
+            Collection<Bundle> refreshes, Bundle provider) {
+        if (refreshes.isEmpty()) {
+            return;
+        }
+        Bundle systemBundle = bundleContext == null ? null : bundleContext.getBundle(0);
+        FrameworkWiring frameworkWiring = systemBundle == null
+                ? null : systemBundle.adapt(FrameworkWiring.class);
+        if (frameworkWiring == null) {
+            log(Level.WARNING, "Cannot refresh consumers after provider " + provider
+                    + " stopped: FrameworkWiring is unavailable");
+            return;
+        }
+
+        List<Bundle> newRefreshes = new ArrayList<Bundle>();
+        for (Bundle consumer : refreshes) {
+            if (requestedProviderStopRefreshes.add(consumer)) {
+                newRefreshes.add(consumer);
+            }
+        }
+        if (newRefreshes.isEmpty()) {
+            return;
+        }
+
+        Set<Bundle> bundles = new LinkedHashSet<Bundle>(newRefreshes);
+        try {
+            frameworkWiring.refreshBundles(bundles, event -> {
+                requestedProviderStopRefreshes.removeAll(newRefreshes);
+                if (event.getType() == FrameworkEvent.ERROR) {
+                    log(Level.WARNING, "Could not refresh consumers " + bundles
+                            + " after provider " + provider + " stopped",
+                            event.getThrowable());
+                }
+            });
+        }
+        catch (RuntimeException e) {
+            requestedProviderStopRefreshes.removeAll(newRefreshes);
+            log(Level.WARNING, "Could not request refresh of consumers " + bundles
+                    + " after provider " + provider + " stopped", e);
+        }
+    }
+
+    private void requestConsumerRefreshes(
+            Collection<Pair<Bundle, BundleRevision>> refreshes, String reason) {
+        if (refreshes.isEmpty()) {
+            return;
+        }
+        Bundle systemBundle = bundleContext == null ? null : bundleContext.getBundle(0);
+        FrameworkWiring frameworkWiring = systemBundle == null
+                ? null : systemBundle.adapt(FrameworkWiring.class);
+        if (frameworkWiring == null) {
+            log(Level.WARNING, "Cannot refresh consumers " + reason
+                    + ": FrameworkWiring is unavailable");
+            return;
+        }
+
+        List<Pair<Bundle, BundleRevision>> newRefreshes =
+                new ArrayList<Pair<Bundle, BundleRevision>>();
+        Set<Bundle> bundles = new LinkedHashSet<Bundle>();
+        for (Pair<Bundle, BundleRevision> refresh : refreshes) {
+            if (requestedConsumerRefreshes.add(refresh)) {
+                newRefreshes.add(refresh);
+                bundles.add(refresh.getLeft());
+            }
+        }
+        if (bundles.isEmpty()) {
+            return;
+        }
+
+        try {
+            frameworkWiring.refreshBundles(bundles, event -> {
+                if (event.getType() == FrameworkEvent.ERROR) {
+                    log(Level.WARNING, "Could not refresh consumers " + bundles + " "
+                            + reason, event.getThrowable());
+                }
+            });
+        }
+        catch (RuntimeException e) {
+            requestedConsumerRefreshes.removeAll(newRefreshes);
+            log(Level.WARNING, "Could not request refresh of consumers " + bundles + " "
+                    + reason, e);
+        }
     }
 
     @Override
     public synchronized void stop(BundleContext context) throws Exception {
+        activeSession = null;
         activator = null;
 
-        consumerBundleTracker.close();
-        providerBundleTracker.close();
+        if (consumerBundleTracker != null) {
+            consumerBundleTracker.close();
+        }
+        if (providerBundleTracker != null) {
+            providerBundleTracker.close();
+        }
+        requestedConsumerRefreshes.clear();
+        consumersByProvider.clear();
+        requestedProviderStopRefreshes.clear();
+    }
+
+    Object getActiveSession() {
+        return activeSession;
+    }
+
+    boolean isSessionActive(Object session) {
+        return session != null && activeSession == session && activator == this;
     }
 
     public boolean isLogEnabled(Level level) {
@@ -274,6 +586,25 @@ public abstract class BaseActivator implements BundleActivator {
             });
     }
 
+    void registerProviderBundle(String serviceType, String implementationName,
+            Bundle bundle, Map<String, Object> customAttributes) {
+        registerProviderBundle(serviceType, bundle, customAttributes);
+        SortedMap<Long, ProviderAdvertisement> advertisements =
+                providerAdvertisements.computeIfAbsent(serviceType,
+                        key -> Collections.synchronizedSortedMap(
+                                new TreeMap<Long, ProviderAdvertisement>()));
+        synchronized (advertisements) {
+            ProviderAdvertisement advertisement = advertisements.get(bundle.getBundleId());
+            if (advertisement == null) {
+                BundleWiring wiring = WiringUtils.getWiring(bundle);
+                BundleRevision revision = wiring == null ? null : wiring.getRevision();
+                advertisement = new ProviderAdvertisement(bundle, revision, wiring);
+                advertisements.put(bundle.getBundleId(), advertisement);
+            }
+            advertisement.addImplementation(implementationName);
+        }
+    }
+
     public void unregisterProviderBundle(Bundle bundle) {
         for (Map<Long, Pair<Bundle, Map<String, Object>>> value : registeredProviders.values()) {
             for(Iterator<Entry<Long, Pair<Bundle, Map<String, Object>>>> it = value.entrySet().iterator(); it.hasNext(); ) {
@@ -282,6 +613,10 @@ public abstract class BaseActivator implements BundleActivator {
                     it.remove();
                 }
             }
+        }
+        for (Map<Long, ProviderAdvertisement> advertisements
+                : providerAdvertisements.values()) {
+            advertisements.remove(bundle.getBundleId());
         }
     }
 
@@ -296,6 +631,46 @@ public abstract class BaseActivator implements BundleActivator {
         }
 
         return bundles;
+    }
+
+    Collection<Bundle> filterCompatibleProviderBundles(
+            Bundle consumer, Class<?> serviceType, Collection<Bundle> providers) {
+        if (!standardConsumerWirings.containsKey(consumer)) {
+            return providers;
+        }
+
+        List<Bundle> compatible = new ArrayList<Bundle>();
+        for (Bundle provider : providers) {
+            try {
+                if (provider.loadClass(serviceType.getName()) == serviceType) {
+                    compatible.add(provider);
+                }
+            }
+            catch (ClassNotFoundException | LinkageError e) {
+                log(Level.FINE, "Provider " + provider
+                        + " is not type-space compatible with " + serviceType.getName(), e);
+            }
+        }
+        return compatible;
+    }
+
+    List<ProviderAdvertisement> findProviderAdvertisements(
+            String serviceType, Collection<Bundle> selectedBundles) {
+        SortedMap<Long, ProviderAdvertisement> advertisements =
+                providerAdvertisements.get(serviceType);
+        if (advertisements == null || selectedBundles.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<ProviderAdvertisement> selected = new ArrayList<ProviderAdvertisement>();
+        synchronized (advertisements) {
+            for (ProviderAdvertisement advertisement : advertisements.values()) {
+                if (selectedBundles.contains(advertisement.getBundle())) {
+                    selected.add(advertisement.snapshot());
+                }
+            }
+        }
+        return selected;
     }
 
     public Map<String, Object> getCustomBundleAttributes(String name, Bundle b) {
@@ -321,6 +696,12 @@ public abstract class BaseActivator implements BundleActivator {
 
     public Collection<Bundle> findConsumerRestrictions(Bundle consumer, String className, String methodName,
             Map<Pair<Integer, String>, String> args) {
+        StandardConsumerWiring standardWiring = standardConsumerWirings.get(consumer);
+        if (standardWiring != null && ServiceLoader.class.getName().equals(className)
+                && isServiceLoaderMethod(methodName)) {
+            return standardWiring.getProviders();
+        }
+
         Map<ConsumerRestriction, List<BundleDescriptor>> restrictions = consumerRestrictions.get(consumer);
         if (restrictions == null) {
             // Null means: no restrictions
@@ -371,8 +752,8 @@ public abstract class BaseActivator implements BundleActivator {
                 } else if (desc.getFilter() != null) {
                     Hashtable<String, Object> d = new Hashtable<String, Object>();
 
-                    if (ServiceLoader.class.getName().equals(className) &&
-                        "load".equals(methodName)) {
+                    if (ServiceLoader.class.getName().equals(className)
+                            && isServiceLoaderMethod(methodName)) {
                         String type = args.get(new Pair<Integer, String>(0, Class.class.getName()));
                         if (type != null) {
                             d.put(SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE, type);
@@ -391,6 +772,138 @@ public abstract class BaseActivator implements BundleActivator {
             }
         }
         return bundles;
+    }
+
+    private static boolean isServiceLoaderMethod(String methodName) {
+        return "load".equals(methodName) || "loadInstalled".equals(methodName);
+    }
+
+    private static final class StandardConsumerWiring {
+        private final boolean restricted;
+        private final Set<Bundle> providers;
+
+        private StandardConsumerWiring(boolean restricted, Set<Bundle> providers) {
+            this.restricted = restricted;
+            this.providers = providers;
+        }
+
+        static StandardConsumerWiring from(BundleWiring wiring) {
+            if (wiring == null) {
+                return new StandardConsumerWiring(true, Collections.<Bundle>emptySet());
+            }
+
+            if (!hasDeclaredServiceLoaderRequirement(wiring)) {
+                return new StandardConsumerWiring(false, Collections.<Bundle>emptySet());
+            }
+
+            Set<Bundle> providers = new LinkedHashSet<Bundle>();
+            for (BundleWire wire : wiring.getRequiredWires(
+                    SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE)) {
+                BundleWiring providerWiring = wire.getProviderWiring();
+                if (providerWiring != null) {
+                    Bundle provider = providerWiring.getBundle();
+                    if (provider != null) {
+                        providers.add(provider);
+                    }
+                }
+            }
+
+            return new StandardConsumerWiring(
+                    true, Collections.unmodifiableSet(providers));
+        }
+
+        private static boolean hasDeclaredServiceLoaderRequirement(BundleWiring wiring) {
+            BundleRevision hostRevision = wiring.getRevision();
+            if (hostRevision == null) {
+                // Compatibility for older wiring implementations and test doubles. A real
+                // R8 wiring supplies its revision, whose declared view is authoritative.
+                List<BundleRequirement> requirements = wiring.getRequirements(
+                        SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE);
+                return requirements != null && !requirements.isEmpty();
+            }
+
+            if (hasDeclaredServiceLoaderRequirement(hostRevision)) {
+                return true;
+            }
+            List<BundleWire> hostWires = wiring.getProvidedWires(
+                    HostNamespace.HOST_NAMESPACE);
+            if (hostWires == null) {
+                return false;
+            }
+            for (BundleWire hostWire : hostWires) {
+                BundleRequirement hostRequirement = hostWire.getRequirement();
+                BundleRevision fragmentRevision = hostRequirement == null
+                        ? null : hostRequirement.getRevision();
+                if (hasDeclaredServiceLoaderRequirement(fragmentRevision)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static boolean hasDeclaredServiceLoaderRequirement(
+                BundleRevision revision) {
+            if (revision == null) {
+                return false;
+            }
+            List<BundleRequirement> requirements = revision.getDeclaredRequirements(
+                    SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE);
+            return requirements != null && !requirements.isEmpty();
+        }
+
+        static StandardConsumerWiring denied() {
+            return new StandardConsumerWiring(
+                    true, Collections.<Bundle>emptySet());
+        }
+
+        Collection<Bundle> getProviders() {
+            if (!restricted) {
+                return null;
+            }
+            return providers;
+        }
+    }
+
+    static final class ProviderAdvertisement {
+        private final Bundle bundle;
+        private final BundleRevision revision;
+        private final BundleWiring wiring;
+        private final Set<String> implementationNames =
+                new java.util.LinkedHashSet<String>();
+
+        private ProviderAdvertisement(Bundle bundle, BundleRevision revision,
+                BundleWiring wiring) {
+            this.bundle = bundle;
+            this.revision = revision;
+            this.wiring = wiring;
+        }
+
+        private synchronized void addImplementation(String implementationName) {
+            implementationNames.add(implementationName);
+        }
+
+        private synchronized ProviderAdvertisement snapshot() {
+            ProviderAdvertisement snapshot = new ProviderAdvertisement(
+                    bundle, revision, wiring);
+            snapshot.implementationNames.addAll(implementationNames);
+            return snapshot;
+        }
+
+        Bundle getBundle() {
+            return bundle;
+        }
+
+        BundleRevision getRevision() {
+            return revision;
+        }
+
+        BundleWiring getWiring() {
+            return wiring;
+        }
+
+        synchronized List<String> getImplementationNames() {
+            return new ArrayList<String>(implementationNames);
+        }
     }
 
 }

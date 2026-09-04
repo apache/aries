@@ -26,6 +26,8 @@ import java.util.Set;
 import org.apache.aries.spifly.Util;
 import org.apache.aries.spifly.WeavingData;
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ConstantDynamic;
+import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -56,6 +58,8 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
 
     private final Type targetClass;
     private final Set<WeavingData> weavingData;
+    private final Set<WeavingData> serviceLoaderBridges =
+            new HashSet<WeavingData>();
 
     // Set to true when the weaving code has changed the client such that an additional import
     // (to the Util.class.getPackage()) is needed.
@@ -103,6 +107,9 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
              methodNames.add(methodName);
 
              if (ServiceLoader.class.getName().equals(wd.getClassName())) {
+                 if (serviceLoaderBridges.contains(wd)) {
+                     addServiceLoaderBridge(wd, methodName);
+                 }
                  continue;
              }
 
@@ -137,6 +144,42 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
         }
 
         super.visitEnd();
+    }
+
+    private void addServiceLoaderBridge(WeavingData wd, String methodName) {
+        Type[] argumentTypes;
+        String utilMethod;
+        if ("loadInstalled".equals(wd.getMethodName())) {
+            argumentTypes = new Type[] {CLASS_TYPE};
+            utilMethod = "serviceLoaderLoadInstalled";
+        }
+        else if (Arrays.equals(
+                new String[] {Class.class.getName(), ClassLoader.class.getName()},
+                wd.getArgClasses())) {
+            argumentTypes = new Type[] {CLASS_TYPE, CLASSLOADER_TYPE};
+            utilMethod = "serviceLoaderLoad";
+        }
+        else {
+            argumentTypes = new Type[] {CLASS_TYPE};
+            utilMethod = "serviceLoaderLoad";
+        }
+
+        Method bridge = new Method(methodName, SERVICELOADER_TYPE, argumentTypes);
+        GeneratorAdapter mv = new GeneratorAdapter(cv.visitMethod(
+                ACC_PRIVATE | ACC_STATIC | ACC_SYNTHETIC, methodName,
+                bridge.getDescriptor(), null, null),
+                ACC_PRIVATE | ACC_STATIC | ACC_SYNTHETIC,
+                methodName, bridge.getDescriptor());
+        mv.loadArgs();
+        mv.visitLdcInsn(targetClass);
+
+        Type[] utilityArguments = Arrays.copyOf(argumentTypes,
+                argumentTypes.length + 1);
+        utilityArguments[argumentTypes.length] = CLASS_TYPE;
+        mv.invokeStatic(UTIL_CLASS, new Method(
+                utilMethod, SERVICELOADER_TYPE, utilityArguments));
+        mv.returnValue();
+        mv.endMethod();
     }
 
     private String getGeneratedMethodName(WeavingData wd) {
@@ -174,7 +217,57 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
             if (cst instanceof Type) {
                 lastLDCType = ((Type) cst);
             }
-            super.visitLdcInsn(cst);
+            super.visitLdcInsn(rewriteServiceLoaderConstant(cst));
+        }
+
+        @Override
+        public void visitInvokeDynamicInsn(String name, String descriptor,
+                Handle bootstrapMethodHandle, Object... bootstrapMethodArguments) {
+            Object[] rewrittenArguments = new Object[bootstrapMethodArguments.length];
+            for (int i = 0; i < bootstrapMethodArguments.length; i++) {
+                rewrittenArguments[i] = rewriteServiceLoaderConstant(
+                        bootstrapMethodArguments[i]);
+            }
+            super.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle,
+                    rewrittenArguments);
+        }
+
+        private Object rewriteServiceLoaderConstant(Object constant) {
+            if (constant instanceof Handle) {
+                Handle handle = (Handle) constant;
+                if (handle.getTag() != H_INVOKESTATIC) {
+                    return handle;
+                }
+                WeavingData wd = findWeavingData(
+                        handle.getOwner(), handle.getName(), handle.getDesc());
+                if (wd == null || !ServiceLoader.class.getName().equals(
+                        wd.getClassName())) {
+                    return handle;
+                }
+
+                serviceLoaderBridges.add(wd);
+                additionalImportRequired = true;
+                woven = true;
+                return new Handle(H_INVOKESTATIC, targetClass.getInternalName(),
+                        getGeneratedMethodName(wd), handle.getDesc(), false);
+            }
+            if (constant instanceof ConstantDynamic) {
+                ConstantDynamic dynamic = (ConstantDynamic) constant;
+                Object[] arguments = new Object[
+                        dynamic.getBootstrapMethodArgumentCount()];
+                boolean changed = false;
+                for (int i = 0; i < arguments.length; i++) {
+                    Object argument = dynamic.getBootstrapMethodArgument(i);
+                    arguments[i] = rewriteServiceLoaderConstant(argument);
+                    changed |= arguments[i] != argument;
+                }
+                if (changed) {
+                    return new ConstantDynamic(dynamic.getName(),
+                            dynamic.getDescriptor(),
+                            dynamic.getBootstrapMethod(), arguments);
+                }
+            }
+            return constant;
         }
 
         /**
@@ -215,6 +308,15 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
 
             additionalImportRequired = true;
             woven = true;
+
+            // ServiceLoader.loadInstalled(Class)
+            if (ServiceLoader.class.getName().equals(wd.getClassName())
+                    && "loadInstalled".equals(wd.getMethodName())) {
+                visitLdcInsn(targetClass);
+                invokeStatic(UTIL_CLASS, new Method("serviceLoaderLoadInstalled",
+                        SERVICELOADER_TYPE, new Type[] {CLASS_TYPE, CLASS_TYPE}));
+                return;
+            }
 
             // ServiceLoader.load(Class, ClassLoader)
             if (ServiceLoader.class.getName().equals(wd.getClassName()) &&
