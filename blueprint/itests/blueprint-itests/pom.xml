@@ -69,7 +69,7 @@
         <pax-logging.version>2.2.14</pax-logging.version>
         <pax-tinybundles.version>2.1.1</pax-tinybundles.version>
         <pax-url.version>2.7.1</pax-url.version>
-        <xbean.version>4.31</xbean.version>
+        <xbean.version>5.0.0</xbean.version>
     </properties>
 
     <dependencies>
