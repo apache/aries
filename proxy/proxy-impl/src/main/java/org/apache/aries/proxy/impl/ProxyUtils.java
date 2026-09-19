@@ -124,7 +124,13 @@ public class ProxyUtils
           weavingJavaVersion = Opcodes.V1_5;
           break;
         default:
-          //aries should work with Java 5 or above - also will highlight when a higher level (and unsupported) level of Java is released
+          if (JAVA_CLASS_VERSION > Opcodes.V25) {
+            // newer JVMs load older class files, so generate proxies at the highest level we know
+            LOGGER.debug("Weaving to Java 25 on newer Java class version {}", JAVA_CLASS_VERSION);
+            weavingJavaVersion = Opcodes.V25;
+            break;
+          }
+          //aries should work with Java 5 or above
           throw new IllegalArgumentException("Invalid Java version " + JAVA_CLASS_VERSION);
       }
     } 
