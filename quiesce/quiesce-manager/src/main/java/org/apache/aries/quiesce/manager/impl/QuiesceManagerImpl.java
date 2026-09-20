@@ -14,6 +14,7 @@
 package org.apache.aries.quiesce.manager.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -217,8 +218,9 @@ public class QuiesceManagerImpl implements QuiesceManager {
         public void run() {
             try {
                 if (bundleContext != null) {
-                    ServiceReference[] serviceRefs = bundleContext.getServiceReferences(QuiesceParticipant.class.getName(), null);
-                    if (serviceRefs != null) {
+                    Collection<ServiceReference<QuiesceParticipant>> serviceRefs =
+                            bundleContext.getServiceReferences(QuiesceParticipant.class, null);
+                    if (serviceRefs != null && !serviceRefs.isEmpty()) {
                         List<QuiesceParticipant> participants = new ArrayList<QuiesceParticipant>();
                         final List<QuiesceCallbackImpl> callbacks = new ArrayList<QuiesceCallbackImpl>();
                         List<Bundle> copyOfBundles = new ArrayList<Bundle>(bundlesToQuiesce);
@@ -241,8 +243,8 @@ public class QuiesceManagerImpl implements QuiesceManager {
 
                         
                         //Create callback objects for all participants
-                        for( ServiceReference sr : serviceRefs ) {
-                            QuiesceParticipant participant = (QuiesceParticipant) bundleContext.getService(sr);
+                        for( ServiceReference<QuiesceParticipant> sr : serviceRefs ) {
+                            QuiesceParticipant participant = bundleContext.getService(sr);
                             participants.add(participant);
                             callbacks.add(new QuiesceCallbackImpl(bundlesToQuiesce, callbacks, future, timeoutFuture));
                         }
