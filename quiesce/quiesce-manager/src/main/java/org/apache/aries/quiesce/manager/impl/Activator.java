@@ -28,7 +28,7 @@ public class Activator implements BundleActivator {
 
     public void start(BundleContext bundleContext) throws Exception {
         QuiesceManager manager = new QuiesceManagerImpl(bundleContext);
-        serviceReg = bundleContext.registerService(QuiesceManager.class.getName(), manager, null);
+        serviceReg = bundleContext.registerService(QuiesceManager.class, manager, null);
     }
 
     public void stop(BundleContext bundleContext) throws Exception {

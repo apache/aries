@@ -14,6 +14,7 @@
 package org.apache.aries.quiesce.manager.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -97,7 +98,7 @@ public class QuiesceManagerImpl implements QuiesceManager {
     
     public Future<?> quiesceWithFuture(long timeout, List<Bundle> bundles) {
         QuiesceFuture result = new QuiesceFuture();
-        if (bundles != null && !!!bundles.isEmpty()) {
+        if (bundles != null && !bundles.isEmpty()) {
             //check that bundle b is not already quiescing
             Iterator<Bundle> it = bundles.iterator();
             Set<Bundle> bundlesToQuiesce = new HashSet<Bundle>();
@@ -134,7 +135,7 @@ public class QuiesceManagerImpl implements QuiesceManager {
         }
 
         public Object get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-            if (!!!latch.await(timeout, unit))
+            if (!latch.await(timeout, unit))
                 throw new TimeoutException();
             
             return null;
@@ -149,7 +150,7 @@ public class QuiesceManagerImpl implements QuiesceManager {
         }
         
         public void registerDone() {
-            if (!!!isDone()) {
+            if (!isDone()) {
                 latch.countDown();
             }
         }
@@ -217,8 +218,9 @@ public class QuiesceManagerImpl implements QuiesceManager {
         public void run() {
             try {
                 if (bundleContext != null) {
-                    ServiceReference[] serviceRefs = bundleContext.getServiceReferences(QuiesceParticipant.class.getName(), null);
-                    if (serviceRefs != null) {
+                    Collection<ServiceReference<QuiesceParticipant>> serviceRefs =
+                            bundleContext.getServiceReferences(QuiesceParticipant.class, null);
+                    if (serviceRefs != null && !serviceRefs.isEmpty()) {
                         List<QuiesceParticipant> participants = new ArrayList<QuiesceParticipant>();
                         final List<QuiesceCallbackImpl> callbacks = new ArrayList<QuiesceCallbackImpl>();
                         List<Bundle> copyOfBundles = new ArrayList<Bundle>(bundlesToQuiesce);
@@ -241,8 +243,8 @@ public class QuiesceManagerImpl implements QuiesceManager {
 
                         
                         //Create callback objects for all participants
-                        for( ServiceReference sr : serviceRefs ) {
-                            QuiesceParticipant participant = (QuiesceParticipant) bundleContext.getService(sr);
+                        for( ServiceReference<QuiesceParticipant> sr : serviceRefs ) {
+                            QuiesceParticipant participant = bundleContext.getService(sr);
                             participants.add(participant);
                             callbacks.add(new QuiesceCallbackImpl(bundlesToQuiesce, callbacks, future, timeoutFuture));
                         }
@@ -311,10 +313,10 @@ public class QuiesceManagerImpl implements QuiesceManager {
             
             synchronized (allCallbacks) {
                 for(Bundle b : bundlesQuiesced) {
-                    if(QuiesceManagerImpl.stillQuiescing(b)) {
+                    if(stillQuiescing(b)) {
                         if(toQuiesce.remove(b)) {
                             if(checkOthers(b)){
-                                QuiesceManagerImpl.stopBundle(b, toQuiesceShared);
+                                stopBundle(b, toQuiesceShared);
                                 if(allCallbacksComplete()){
                                     future.registerDone();
                                     timeoutFuture.cancel(false);
@@ -340,7 +342,7 @@ public class QuiesceManagerImpl implements QuiesceManager {
             boolean allDone = true;
             Iterator<QuiesceCallbackImpl> it = allCallbacks.iterator();
             while (allDone && it.hasNext()) {
-                allDone = !!!it.next().toQuiesce.contains(b);
+                allDone = !it.next().toQuiesce.contains(b);
             }
             return allDone;
         }
@@ -350,7 +352,7 @@ public class QuiesceManagerImpl implements QuiesceManager {
             Iterator<QuiesceCallbackImpl> it = allCallbacks.iterator();
             while (allDone && it.hasNext()) {
                 QuiesceCallbackImpl next = it.next();
-                if (!!!next.toQuiesce.isEmpty()) allDone = false;
+                if (!next.toQuiesce.isEmpty()) allDone = false;
             }
             return allDone;
         }        
