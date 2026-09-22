@@ -237,7 +237,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
                        Arrays.asList(interfaces).contains(Type.getInternalName(Serializable.class)) ||
                        checkInterfacesForSerializability(interfaces);
       
-      if (!!!WovenProxy.class.isAssignableFrom(superClass)) {
+      if (!WovenProxy.class.isAssignableFrom(superClass)) {
 
         // We have found a type we need to add WovenProxy information to
 
@@ -295,7 +295,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
    * initialization references the subclass being woven. Odd, but seen
    * in the wild!
    */
-  private final boolean superHasNoArgsConstructor(String superName, String name) {
+  private boolean superHasNoArgsConstructor(String superName, String name) {
     
     ConstructorFinder cf = new ConstructorFinder();
     
@@ -344,8 +344,8 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
     // Only weave "real" instance methods. Not constructors, initializers or
     // compiler generated ones.
     if ((access & (ACC_STATIC | ACC_PRIVATE | ACC_SYNTHETIC 
-        | ACC_NATIVE | ACC_BRIDGE)) == 0 && !!!name.equals("<init>") && 
-        !!!name.equals("<clinit>")) {
+        | ACC_NATIVE | ACC_BRIDGE)) == 0 && !name.equals("<init>") &&
+        !name.equals("<clinit>")) {
 
       // found a method we should weave
 
@@ -446,7 +446,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
   /**
    * Write the methods we need for wovenProxies on the highest supertype
    */
-  private final void writeFinalWovenProxyMethods() {
+  private void writeFinalWovenProxyMethods() {
     // add private fields for the Callable<Object> dispatcher
     // and InvocationListener. These aren't static because we can have
     // multiple instances of the same proxy class. These should not be
@@ -516,7 +516,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
    * overridden on each class, we also write a constructor for this method to
    * use if we don't have one.
    */
-  private final void writeCreateNewProxyInstanceAndConstructor() {
+  private void writeCreateNewProxyInstanceAndConstructor() {
     GeneratorAdapter methodAdapter = getMethodGenerator(ACC_PUBLIC, new Method(
         "org_apache_aries_proxy_weaving_WovenProxy_createNewProxyInstance",
         WOVEN_PROXY_IFACE_TYPE, DISPATCHER_LISTENER_METHOD_ARGS));
@@ -554,7 +554,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
           methodAdapter.invokeConstructor(typeBeingWoven, NO_ARGS_CONSTRUCTOR);
         else
           throw new RuntimeException(new UnableToProxyException(typeBeingWoven.getClassName(), 
-              String.format("The class %s and its superclass %s do not have no-args constructors and cannot be woven.",
+              format("The class %s and its superclass %s do not have no-args constructors and cannot be woven.",
                             typeBeingWoven.getClassName(), superType.getClassName())));
       }
       methodAdapter.loadThis();
@@ -591,7 +591,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
    * Create fields and an initialiser for {@link java.lang.reflect.Method}
    * objects in our class
    */
-  private final void writeStaticInitMethod() {
+  private void writeStaticInitMethod() {
     // we create a static field for each method we encounter with a *unique*
     // random name
     // since each method needs to be stored individually
@@ -701,7 +701,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
    * @param fieldName
    * @param fieldDescriptor
    */
-  private final void generateField(String fieldName, String fieldDescriptor) {
+  private void generateField(String fieldName, String fieldDescriptor) {
     FieldVisitor fv = cv.visitField(ACC_PROTECTED | ACC_TRANSIENT | ACC_SYNTHETIC
         | ACC_FINAL, fieldName, fieldDescriptor, null, null);
     for (String s : annotationTypeDescriptors)
@@ -716,7 +716,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
    * @param methodSignature
    * @return
    */
-  private final GeneratorAdapter getMethodGenerator(int access, Method method) {
+  private GeneratorAdapter getMethodGenerator(int access, Method method) {
     access = access | ACC_SYNTHETIC;
     GeneratorAdapter ga = new GeneratorAdapter(access, method, null, null, cv);
     for (String s : annotationTypeDescriptors)
