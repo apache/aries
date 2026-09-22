@@ -196,9 +196,6 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
 
   protected boolean currentMethodDeclaringTypeIsInterface;
   
- 
-  public static final boolean IS_AT_LEAST_JAVA_6 = JAVA_CLASS_VERSION >= Opcodes.V1_6;
-  
   /**
    * Create a new adapter for the supplied class
    * 

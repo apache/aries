@@ -172,9 +172,9 @@
 
     <profiles>
         <profile>
-            <id>java9To25</id>
+            <id>java9To27</id>
             <activation>
-                <jdk>(8,26)</jdk>
+                <jdk>(8,28)</jdk>
             </activation>
             <build>
                 <plugins>
@@ -256,9 +256,9 @@
             </build>
         </profile>
         <profile>
-            <id>java25</id>
+            <id>java25To27</id>
             <activation>
-                <jdk>25</jdk>
+                <jdk>(24,28)</jdk>
             </activation>
             <build>
                 <plugins>
