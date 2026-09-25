@@ -186,7 +186,7 @@
         <pax-logging.version>2.2.14</pax-logging.version>
         <osgi.cmpn.version>4.3.1</osgi.cmpn.version>
         <osgi.core.version>4.3.1</osgi.core.version>
-        <slf4j.version>2.0.19</slf4j.version>
+        <slf4j.version>2.0.20</slf4j.version>
 
         <!--Plugin versions-->
         <animal-sniffer-enforcer-rule.version>1.28</animal-sniffer-enforcer-rule.version>
