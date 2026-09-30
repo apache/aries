@@ -194,7 +194,7 @@
         <profile>
             <id>java9To25</id>
             <activation>
-                <jdk>(8,26)</jdk>
+                <jdk>(8,28)</jdk>
             </activation>
             <build>
                 <plugins>
