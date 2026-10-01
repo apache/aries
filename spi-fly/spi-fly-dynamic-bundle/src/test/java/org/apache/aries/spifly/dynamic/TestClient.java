@@ -21,6 +21,8 @@ package org.apache.aries.spifly.dynamic;
 import java.util.HashSet;
 import java.util.ServiceLoader;
 import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import org.apache.aries.mytest.MySPI;
 
@@ -65,6 +67,37 @@ public class TestClient {
         ServiceLoader<?> loader = ServiceLoader.load(cls);
         for (Object obj : loader) {
             results.add(((MySPI) obj).someMethod(input));
+        }
+        return results;
+    }
+
+    public Set<String> testInstalled(String input) {
+        Set<String> results = new HashSet<String>();
+        ServiceLoader<MySPI> loader = ServiceLoader.loadInstalled(MySPI.class);
+        for (MySPI mySPI : loader) {
+            results.add(mySPI.someMethod(input));
+        }
+        return results;
+    }
+
+    public Set<String> testMethodReferences(String input,
+            ClassLoader specifiedClassLoader) {
+        Set<String> results = new HashSet<String>();
+        Function<Class<MySPI>, ServiceLoader<MySPI>> load = ServiceLoader::load;
+        BiFunction<Class<MySPI>, ClassLoader, ServiceLoader<MySPI>> loadWithLoader =
+                ServiceLoader::load;
+        Function<Class<MySPI>, ServiceLoader<MySPI>> loadInstalled =
+                ServiceLoader::loadInstalled;
+
+        for (MySPI mySPI : load.apply(MySPI.class)) {
+            results.add("load:" + mySPI.someMethod(input));
+        }
+        for (MySPI mySPI : loadWithLoader.apply(
+                MySPI.class, specifiedClassLoader)) {
+            results.add("loader:" + mySPI.someMethod(input));
+        }
+        for (MySPI mySPI : loadInstalled.apply(MySPI.class)) {
+            results.add("installed:" + mySPI.someMethod(input));
         }
         return results;
     }
