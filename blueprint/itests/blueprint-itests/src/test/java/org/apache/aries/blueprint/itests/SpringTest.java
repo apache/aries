@@ -64,6 +64,8 @@ public class SpringTest extends AbstractBlueprintIntegrationTest {
             // Blueprint spring
             mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.spring"),
             // Spring
+            // javax.annotation is not provided by the JDK since Java 11
+            mavenBundle("javax.annotation", "javax.annotation-api", "1.3.2"),
             mvnBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.aopalliance"),
             mvnBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.spring-core"),
             mvnBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.spring-context"),

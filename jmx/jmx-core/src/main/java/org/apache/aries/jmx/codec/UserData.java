@@ -32,7 +32,7 @@ import org.osgi.service.useradmin.User;
 
 /**
  * <p>
- * <tt>UserData</tt> represents User Type @see {@link UserAdminMBean#USER_TYPE}.It is a codec
+ * {@code UserData} represents User Type @see {@link UserAdminMBean#USER_TYPE}.It is a codec
  * for the <code>CompositeData</code> representing a User.
  * </p>
  * @see RoleData

@@ -38,7 +38,7 @@ import org.osgi.jmx.framework.ServiceStateMBean;
 
 /**
  <p>
- * <tt>ServiceEventData</tt> represents ServiceEvent Type @see {@link ServiceStateMBean#SERVICE_EVENT_TYPE}.
+ * {@code ServiceEventData} represents ServiceEvent Type @see {@link ServiceStateMBean#SERVICE_EVENT_TYPE}.
  * It is a codec for the <code>CompositeData</code> representing an OSGi ServiceEvent.
  * </p>
  *

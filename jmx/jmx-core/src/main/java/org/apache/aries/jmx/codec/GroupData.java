@@ -31,7 +31,7 @@ import org.osgi.service.useradmin.Role;
 
 /**
  * <p>
- * <tt>GroupData</tt> represents Group Type @see {@link UserAdminMBean#GROUP_TYPE}.It is a codec
+ * {@code GroupData} represents Group Type @see {@link UserAdminMBean#GROUP_TYPE}.It is a codec
  * for the <code>CompositeData</code> representing a Group.
  * </p>
  * </p>

@@ -258,11 +258,13 @@ public class Activator implements BundleActivator {
 
     private String getClassName(Class<?> expectedType) {
         try {
-            for (Field field : NamingManager.class.getDeclaredFields()) {
-                if (expectedType.equals(field.getType())) {
-                    field.setAccessible(true);
-                    Object icf = field.get(null);
-                    return icf.getClass().getName();
+            for (Class<?> holder : getNamingManagerClasses()) {
+                for (Field field : holder.getDeclaredFields()) {
+                    if (expectedType.equals(field.getType())) {
+                        field.setAccessible(true);
+                        Object icf = field.get(null);
+                        return icf.getClass().getName();
+                    }
                 }
             }
         } catch (Throwable t) {
@@ -272,17 +274,33 @@ public class Activator implements BundleActivator {
     }
 
     /*
+     * Since Java 17 the ObjectFactoryBuilder is held by an internal helper class instead of NamingManager.
+     */
+    private static List<Class<?>> getNamingManagerClasses() {
+        List<Class<?>> classes = new ArrayList<>();
+        classes.add(NamingManager.class);
+        try {
+            classes.add(Class.forName("com.sun.naming.internal.NamingManagerHelper", false, NamingManager.class.getClassLoader()));
+        } catch (ClassNotFoundException e) {
+            // Java 16 and earlier: all the fields are in NamingManager
+        }
+        return classes;
+    }
+
+    /*
      * There are no public API to reset the InitialContextFactoryBuilder or
      * ObjectFactoryBuilder on the NamingManager so try to use reflection.
      */
     private static <T> T swapStaticField(Class<T> expectedType, Object value) throws IllegalStateException {
         try {
-            for (Field field : NamingManager.class.getDeclaredFields()) {
-                if (expectedType.equals(field.getType())) {
-                    field.setAccessible(true);
-                    T original = expectedType.cast(field.get(null));
-                    field.set(null, value);
-                    return original;
+            for (Class<?> holder : getNamingManagerClasses()) {
+                for (Field field : holder.getDeclaredFields()) {
+                    if (expectedType.equals(field.getType())) {
+                        field.setAccessible(true);
+                        T original = expectedType.cast(field.get(null));
+                        field.set(null, value);
+                        return original;
+                    }
                 }
             }
         } catch (Throwable t) {
