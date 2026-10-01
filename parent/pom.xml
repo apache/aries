@@ -191,7 +191,7 @@
         <!--Plugin versions-->
         <animal-sniffer-enforcer-rule.version>1.28</animal-sniffer-enforcer-rule.version>
         <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
-        <depgraph-maven-plugin.version>4.0.3</depgraph-maven-plugin.version>
+        <depgraph-maven-plugin.version>4.0.5</depgraph-maven-plugin.version>
         <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
         <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
         <maven-pmd-plugin.version>3.28.0</maven-pmd-plugin.version>
