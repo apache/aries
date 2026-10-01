@@ -163,6 +163,7 @@ public abstract class AbstractBlogIntegrationTest extends org.apache.aries.itest
                 mavenBundle("org.apache.aries.quiesce", "org.apache.aries.quiesce.manager").versionAsInProject(),
                 mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint").versionAsInProject(),
                 mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy").versionAsInProject(),
+                mavenBundle("org.objenesis", "objenesis").versionAsInProject(),
                 mavenBundle("org.apache.aries", "org.apache.aries.util").versionAsInProject(),
                 mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi").versionAsInProject(),
                 mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.api").versionAsInProject(),
