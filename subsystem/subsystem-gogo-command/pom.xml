@@ -51,7 +51,7 @@
         </aries.osgi.private.pkg>
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
 
-        <osgi.core.version>6.0.0</osgi.core.version>
+        <osgi.core.version>8.0.0</osgi.core.version>
         <osgi.enterprise.version>5.0.0</osgi.enterprise.version>
     </properties>
 

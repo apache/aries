@@ -59,7 +59,7 @@
         <aries.javadoc.doclint>none</aries.javadoc.doclint>
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
 
-        <osgi.core.version>4.3.1</osgi.core.version>
+        <osgi.core.version>8.0.0</osgi.core.version>
     </properties>
 
     <dependencies>
