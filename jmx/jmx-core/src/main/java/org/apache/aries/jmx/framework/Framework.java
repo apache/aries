@@ -42,7 +42,7 @@ import org.osgi.service.startlevel.StartLevel;
 
 /**
  * <p>
- * <tt>Framework</tt> represents {@link FrameworkMBean} implementation.
+ * {@code Framework} represents {@link FrameworkMBean} implementation.
  * </p>
  * @see FrameworkMBean
  *

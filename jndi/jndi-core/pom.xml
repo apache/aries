@@ -53,6 +53,8 @@
             org.apache.aries.jndi.startup.Activator
         </aries.osgi.activator>
         <aries.osgi.export.pkg/>
+        <!-- JDK internal class only accessed reflectively (Java 17 and above) -->
+        <aries.osgi.import.before.defaults>!com.sun.naming.internal</aries.osgi.import.before.defaults>
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
 
         <jndi-api.version>1.1.1-SNAPSHOT</jndi-api.version>
@@ -102,4 +104,16 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>-enableassertions --add-opens java.naming/javax.naming.spi=ALL-UNNAMED --add-opens java.naming/com.sun.naming.internal=ALL-UNNAMED</argLine>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

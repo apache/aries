@@ -23,7 +23,7 @@ import org.apache.aries.jmx.MBeanHandler;
 import org.osgi.framework.BundleContext;
 
 /**
- * <p>This class <tt>JMXAgentContext</tt> represents context of JMXAgent.
+ * <p>This class {@code JMXAgentContext} represents context of JMXAgent.
  * Delegates registration and unregistration methods to {@link JMXAgent}.</p>
  * @see JMXAgent
  *

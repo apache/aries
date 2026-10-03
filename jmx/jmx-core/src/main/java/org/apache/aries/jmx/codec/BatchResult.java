@@ -20,7 +20,7 @@ import org.osgi.jmx.framework.FrameworkMBean;
 
 /**
  * <p>
- * <tt>BatchResult</tt> represents abstract class for BatchResults.
+ * {@code BatchResult} represents abstract class for BatchResults.
  * It contains common data structure of batch result:
  * <ul>
  * <li>completed containing the list of bundles completing the batch operation.</li>

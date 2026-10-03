@@ -26,7 +26,7 @@ import org.osgi.jmx.framework.FrameworkMBean;
 
 /**
  * <p>
- * <tt>BatchInstallResult</tt> represents codec for resulting CompositeData of batch operations
+ * {@code BatchInstallResult} represents codec for resulting CompositeData of batch operations
  * made on bundle via FrameworkMBean.
  * It's converting batch install results to CompositeData {@link #toCompositeData()}
  * and from CompositeData to this BatchActionResult {@link #from(CompositeData)}.

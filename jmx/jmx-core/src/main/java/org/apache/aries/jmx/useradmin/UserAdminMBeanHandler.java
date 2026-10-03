@@ -29,7 +29,7 @@ import org.osgi.service.log.LogService;
 
 /**
  * <p>
- * <tt>UserAdminMBeanHandler</tt> represents MBeanHandler which
+ * {@code UserAdminMBeanHandler} represents MBeanHandler which
  * holding information about {@link PermissionAdminMBean}.</p>
  * @see AbstractCompendiumHandler
  * @see MBeanHandler

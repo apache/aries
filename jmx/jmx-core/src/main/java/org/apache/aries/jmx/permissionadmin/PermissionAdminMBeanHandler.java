@@ -28,7 +28,7 @@ import org.osgi.service.log.LogService;
 
 /**
  * <p>
- * <tt>PermissionAdminMBeanHandler</tt> represents MBeanHandler which
+ * {@code PermissionAdminMBeanHandler} represents MBeanHandler which
  * holding information about {@link PermissionAdminMBean}.</p>
  * @see MBeanHandler
  *

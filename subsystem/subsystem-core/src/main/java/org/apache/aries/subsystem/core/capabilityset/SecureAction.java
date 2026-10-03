@@ -61,7 +61,7 @@ import org.osgi.framework.wiring.BundleRevision;
 /**
  * <p>
  * This is a utility class to centralize all action that should be performed
- * in a <tt>doPrivileged()</tt> block. To perform a secure action, simply
+ * in a {@code doPrivileged()} block. To perform a secure action, simply
  * create an instance of this class and use the specific method to perform
  * the desired action. When an instance is created, this class will capture
  * the security context and will then use that context when checking for
