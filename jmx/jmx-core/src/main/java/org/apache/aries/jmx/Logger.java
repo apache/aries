@@ -22,7 +22,7 @@ import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
- * <p>This <tt>Logger</tt> class represents ServiceTracker for LogService. 
+ * <p>This {@code Logger} class represents ServiceTracker for LogService. 
  * It provides methods for logging messages. If LogService is not available it logs to stdout.</p>
  * 
  * @see org.osgi.service.log.LogService

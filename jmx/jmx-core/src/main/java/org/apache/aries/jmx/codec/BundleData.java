@@ -77,7 +77,7 @@ import org.osgi.service.startlevel.StartLevel;
 
 /**
  * <p>
- * <tt>BundleData</tt> represents BundleData Type @see {@link BundleStateMBean#BUNDLE_TYPE}. It is a codec for the
+ * {@code BundleData} represents BundleData Type @see {@link BundleStateMBean#BUNDLE_TYPE}. It is a codec for the
  * <code>CompositeData</code> representing an OSGi BundleData.
  * </p>
  *

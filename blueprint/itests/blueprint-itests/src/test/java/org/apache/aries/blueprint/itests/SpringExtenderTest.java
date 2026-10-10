@@ -22,6 +22,7 @@ import static org.apache.aries.blueprint.itests.Helper.mvnBundle;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 
 import org.apache.aries.blueprint.testbundlee.BeanCItf;
 import org.junit.Test;
@@ -61,6 +62,8 @@ public class SpringExtenderTest extends AbstractBlueprintIntegrationTest {
             mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.spring"),
             mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.spring.extender"),
             // Spring
+            // javax.annotation is not provided by the JDK since Java 11
+            mavenBundle("javax.annotation", "javax.annotation-api", "1.3.2"),
             mvnBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.aopalliance"),
             mvnBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.spring-core"),
             mvnBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.spring-context"),

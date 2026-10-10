@@ -114,10 +114,11 @@ public class ManifestProcessor
         if (line != null && line.trim().length() == 0) continue;
         if (line != null && line.charAt(0) == ' ' && attribute != null) {
           // we have a continuation line, so add to the builder, ignoring the
-          // first character
-          attribute.append(line.trim());
+          // first character. The remaining whitespace is significant as the line
+          // may have been wrapped right after (or before) a space.
+          attribute.append(line, 1, line.length());
         } else if (attribute == null) {
-          attribute = new StringBuilder(line.trim());
+          attribute = new StringBuilder(line);
         } else if (attribute != null) {
           // We have fully parsed an attribute
           int index = attribute.indexOf(":");
@@ -137,7 +138,7 @@ public class ManifestProcessor
             }
           }
           
-          if (line != null) attribute = new StringBuilder(line.trim());
+          if (line != null) attribute = new StringBuilder(line);
         }
       } while (line != null);
     }
