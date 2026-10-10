@@ -46,7 +46,7 @@
         <objenesis.version>3.6</objenesis.version>
         <org.apache.aries.subsystem.modeller.version>1.0.0-SNAPSHOT</org.apache.aries.subsystem.modeller.version>
         <org.apache.aries.blueprint.version>1.10.4-SNAPSHOT</org.apache.aries.blueprint.version>
-        <org.apache.aries.proxy.version>1.1.15-SNAPSHOT</org.apache.aries.proxy.version>
+        <org.apache.aries.proxy.version>2.0.1-SNAPSHOT</org.apache.aries.proxy.version>
         <org.apache.aries.subsystem.api.version>2.0.11-SNAPSHOT</org.apache.aries.subsystem.api.version>
         <org.apache.aries.subsystem.core.version>2.0.11-SNAPSHOT</org.apache.aries.subsystem.core.version>
         <org.apache.aries.subsystem.itest.interfaces.version>1.0.0-SNAPSHOT</org.apache.aries.subsystem.itest.interfaces.version>

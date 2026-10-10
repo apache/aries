@@ -58,8 +58,8 @@
         <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
         <maven-surefire-plugin.version>3.6.0</maven-surefire-plugin.version>
         <objenesis.version>3.6</objenesis.version>
-        <org.apache.aries.proxy.version>1.1.15-SNAPSHOT</org.apache.aries.proxy.version>
-        <org.apache.aries.quiesce.api.version>1.0.1-SNAPSHOT</org.apache.aries.quiesce.api.version>
+        <org.apache.aries.proxy.version>2.0.1-SNAPSHOT</org.apache.aries.proxy.version>
+        <org.apache.aries.quiesce.api.version>1.0.2-SNAPSHOT</org.apache.aries.quiesce.api.version>
         <org.apache.aries.testsupport.unit.version>2.0.0</org.apache.aries.testsupport.unit.version>
         <org.apache.felix.configadmin.version>1.9.26</org.apache.felix.configadmin.version>
         <org.apache.servicemix.bundles.aopalliance.version>1.0_6</org.apache.servicemix.bundles.aopalliance.version>
