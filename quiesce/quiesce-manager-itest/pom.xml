@@ -42,8 +42,8 @@
     <properties>
         <aries.skip.version.check>true</aries.skip.version.check>
         <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
-        <org.apache.aries.quiesce.api.version>1.0.1-SNAPSHOT</org.apache.aries.quiesce.api.version>
-        <org.apache.aries.quiesce.manager.version>1.0.1-SNAPSHOT</org.apache.aries.quiesce.manager.version>
+        <org.apache.aries.quiesce.api.version>1.0.2-SNAPSHOT</org.apache.aries.quiesce.api.version>
+        <org.apache.aries.quiesce.manager.version>1.0.2-SNAPSHOT</org.apache.aries.quiesce.manager.version>
         <org.apache.aries.testsupport.unit.version>2.0.0</org.apache.aries.testsupport.unit.version>
         <org.apache.aries.util.version>2.0.0</org.apache.aries.util.version>
         <org.eclipse.osgi.version>3.23.100</org.eclipse.osgi.version>
