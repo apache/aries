@@ -32,7 +32,7 @@
     <artifactId>org.apache.aries.proxy</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Proxy Service</name>
-    <version>1.1.15-SNAPSHOT</version>
+    <version>2.0.0</version>
     <description>
         This bundle contains the proxy service implementation for Apache Aries
     </description>
@@ -41,7 +41,7 @@
         <connection>scm:git:git@github.com:apache/aries.git</connection>
         <developerConnection>scm:git:git@github.com:apache/aries.git</developerConnection>
         <url>https://github.com/apache/aries</url>
-        <tag>HEAD</tag>
+        <tag>org.apache.aries.proxy-2.0.0</tag>
     </scm>
 
     <properties>
@@ -209,9 +209,9 @@
                                     <target>
                                         <!-- run the Synthesizer on the WovenProxy class -->
                                         <java classname="org.apache.aries.proxy.synthesizer.Synthesizer" classpathref="maven.runtime.classpath" fork="false">
-                                            <arg value="${project.build.outputDirectory}/org/apache/aries/proxy/weaving/WovenProxy.class"/>
+                                            <arg value="${project.build.outputDirectory}/org/apache/aries/proxy/weaving/WovenProxy.class" />
                                         </java>
-                                        <delete dir="${project.build.outputDirectory}/org/apache/aries/proxy/synthesizer"/>
+                                        <delete dir="${project.build.outputDirectory}/org/apache/aries/proxy/synthesizer" />
                                     </target>
                                 </configuration>
                                 <goals>
@@ -242,9 +242,9 @@
                                         <!-- diff from previous java versions: fork and jvmarg -->
                                         <java classname="org.apache.aries.proxy.synthesizer.Synthesizer" classpathref="maven.runtime.classpath" fork="true">
                                             <jvmarg value="-Djava.security.manager=allow" />
-                                            <arg value="${project.build.outputDirectory}/org/apache/aries/proxy/weaving/WovenProxy.class"/>
+                                            <arg value="${project.build.outputDirectory}/org/apache/aries/proxy/weaving/WovenProxy.class" />
                                         </java>
-                                        <delete dir="${project.build.outputDirectory}/org/apache/aries/proxy/synthesizer"/>
+                                        <delete dir="${project.build.outputDirectory}/org/apache/aries/proxy/synthesizer" />
                                     </target>
                                 </configuration>
                                 <goals>
@@ -274,9 +274,9 @@
                                         <!-- run the Synthesizer on the WovenProxy class -->
                                         <!-- diff from previous java versions: fork and jvmarg -->
                                         <java classname="org.apache.aries.proxy.synthesizer.Synthesizer" classpathref="maven.runtime.classpath" fork="true">
-                                            <arg value="${project.build.outputDirectory}/org/apache/aries/proxy/weaving/WovenProxy.class"/>
+                                            <arg value="${project.build.outputDirectory}/org/apache/aries/proxy/weaving/WovenProxy.class" />
                                         </java>
-                                        <delete dir="${project.build.outputDirectory}/org/apache/aries/proxy/synthesizer"/>
+                                        <delete dir="${project.build.outputDirectory}/org/apache/aries/proxy/synthesizer" />
                                     </target>
                                 </configuration>
                                 <goals>
