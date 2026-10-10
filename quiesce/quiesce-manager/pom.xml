@@ -31,7 +31,7 @@
     <groupId>org.apache.aries.quiesce</groupId>
     <artifactId>org.apache.aries.quiesce.manager</artifactId>
     <packaging>bundle</packaging>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.1</version>
     <name>Apache Aries Quiesce Manager</name>
     <description>
         Quiesce Manager.
@@ -41,10 +41,11 @@
         <connection>scm:git:git@github.com:apache/aries.git</connection>
         <developerConnection>scm:git:git@github.com:apache/aries.git</developerConnection>
         <url>https://github.com/apache/aries</url>
-    </scm>
+      <tag>org.apache.aries.quiesce.manager-1.0.1</tag>
+  </scm>
 
     <properties>
-        <aries.osgi.export.pkg/>
+        <aries.osgi.export.pkg />
         <aries.osgi.private.pkg>
             org.apache.aries.quiesce.manager.impl
         </aries.osgi.private.pkg>
