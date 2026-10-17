@@ -21,39 +21,50 @@ package org.apache.aries.spifly;
 import static java.util.stream.Collectors.toList;
 import static org.osgi.framework.wiring.BundleRevision.TYPE_FRAGMENT;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
+import java.util.jar.Manifest;
 import java.util.logging.Level;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Stream;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.Constants;
-import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServicePermission;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.namespace.HostNamespace;
+import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
 
 import aQute.bnd.header.Attrs;
-import aQute.bnd.header.OSGiHeader;
 import aQute.bnd.header.Parameters;
 import aQute.bnd.stream.MapStream;
 import aQute.libg.glob.Glob;
@@ -64,12 +75,15 @@ import aQute.libg.glob.Glob;
 @SuppressWarnings("rawtypes")
 public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer {
     private static final String METAINF_SERVICES = "META-INF/services";
+    private static final String REGISTER_DIRECTIVE_NAME = "register";
     private static final List<String> MERGE_HEADERS = Arrays.asList(
         Constants.IMPORT_PACKAGE, Constants.REQUIRE_BUNDLE, Constants.EXPORT_PACKAGE,
         Constants.PROVIDE_CAPABILITY, Constants.REQUIRE_CAPABILITY);
 
     final BaseActivator activator;
     final Bundle spiBundle;
+    private final ConcurrentMap<Bundle, BundleWiring> processedWirings =
+            new ConcurrentHashMap<Bundle, BundleWiring>();
 
     public ProviderBundleTrackerCustomizer(BaseActivator activator, Bundle spiBundle) {
         this.activator = activator;
@@ -87,12 +101,24 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
         DiscoveryMode discoveryMode = DiscoveryMode.SERVICELOADER_CAPABILITIES;
         List<String> providedServices = null;
+        List<BundleCapability> serviceLoaderCapabilities = Collections.emptyList();
+        boolean registerServiceLoaderServices = false;
         Map<String, Object> customAttributes = new HashMap<String, Object>();
-        if (bundle.getHeaders().get(SpiFlyConstants.REQUIRE_CAPABILITY) != null) {
-            try {
-                providedServices = readServiceLoaderMediatorCapabilityMetadata(bundle, customAttributes);
-            } catch (InvalidSyntaxException e) {
-                log(Level.FINE, "Unable to read capabilities from bundle " + bundle, e);
+        BundleWiring wiring = WiringUtils.getWiring(bundle);
+        if (wiring != null) {
+            serviceLoaderCapabilities = wiring.getCapabilities(
+                    SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE);
+            if (!serviceLoaderCapabilities.isEmpty()) {
+                providedServices = new ArrayList<String>();
+                for (BundleCapability capability : serviceLoaderCapabilities) {
+                    Object serviceType = capability.getAttributes().get(
+                            SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE);
+                    if (serviceType instanceof String) {
+                        providedServices.add(((String) serviceType).trim());
+                    }
+                }
+                registerServiceLoaderServices = WiringUtils.isWiredToExtender(
+                        wiring, spiBundle, SpiFlyConstants.REGISTRAR_EXTENDER_NAME);
             }
         }
 
@@ -119,7 +145,10 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         if (providedServices == null) {
             log(Level.FINE, "No provided SPI services. Skipping bundle: "
                     + bundle.getSymbolicName());
-            return null;
+            // Keep active hosts tracked so a fragment attached later can add provider
+            // capabilities and configuration resources to them.
+            recordProcessedWiring(bundle, wiring);
+            return new ArrayList<ServiceRegistration>();
         } else {
             log(Level.FINE, "Examining bundle for SPI provider: "
                     + bundle.getSymbolicName());
@@ -127,42 +156,37 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
         for (String serviceType : providedServices) {
             // Eagerly register any services that are explicitly listed, as they may not be found in META-INF/services
+            // Keep every eligible bundle indexed so Conditional Permission Admin grants and
+            // revocations can be observed by the lazy ServiceLoader view without reprocessing.
             activator.registerProviderBundle(serviceType, bundle, customAttributes);
         }
 
         if (serviceFileURLs == null) {
-            serviceFileURLs = getServiceFileUrls(bundle);
+            serviceFileURLs = getServiceFileUrls(bundle,
+                    discoveryMode == DiscoveryMode.SERVICELOADER_CAPABILITIES
+                            ? providedServices : null);
         }
 
         final List<ServiceRegistration> registrations = new ArrayList<ServiceRegistration>();
-        for (ServiceDetails details : collectServiceDetails(bundle, serviceFileURLs, discoveryMode)) {
-            if (providedServices.size() > 0 && !providedServices.contains(details.serviceType))
+        for (ServiceDetails details : collectServiceDetails(bundle, serviceFileURLs, discoveryMode,
+                serviceLoaderCapabilities, registerServiceLoaderServices)) {
+            if ((discoveryMode == DiscoveryMode.SERVICELOADER_CAPABILITIES
+                    || providedServices.size() > 0)
+                    && !providedServices.contains(details.serviceType))
                 continue;
 
             try {
                 final Class<?> cls = bundle.loadClass(details.instanceType);
                 log(Level.FINE, "Loaded SPI provider: " + cls);
 
-                if (details.properties != null) {
+                if (details.properties != null
+                        && hasRegisterPermission(bundle, details.serviceType)) {
                     ServiceRegistration reg = null;
-                    Object instance =
-                        (details.properties.containsKey("service.scope") &&
-                        "prototype".equalsIgnoreCase(String.valueOf(details.properties.get("service.scope")))) ?
-                            new ProviderPrototypeServiceFactory(cls) :
-                            new ProviderServiceFactory(cls);
+                    Object instance = new ProviderServiceFactory(
+                            cls, bundle, details.serviceType);
 
-                    SecurityManager sm = System.getSecurityManager();
-                    if (sm != null) {
-                        if (bundle.hasPermission(new ServicePermission(details.serviceType, ServicePermission.REGISTER))) {
-                            reg = bundle.getBundleContext().registerService(
-                                    details.serviceType, instance, details.properties);
-                        } else {
-                            log(Level.FINE, "Bundle " + bundle + " does not have the permission to register services of type: " + details.serviceType);
-                        }
-                    } else {
-                        reg = bundle.getBundleContext().registerService(
+                    reg = bundle.getBundleContext().registerService(
                             details.serviceType, instance, details.properties);
-                    }
 
                     if (reg != null) {
                         registrations.add(reg);
@@ -170,7 +194,10 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                     }
                 }
 
-                activator.registerProviderBundle(details.serviceType, bundle, details.properties);
+                activator.registerProviderBundle(details.serviceType,
+                        details.instanceType, bundle,
+                        details.properties == null
+                                ? Collections.<String, Object>emptyMap() : details.properties);
                 log(Level.INFO, "Registered provider " + details.instanceType + " of service " + details.serviceType + " in bundle " + bundle.getSymbolicName());
             } catch (Exception | NoClassDefFoundError e) {
                 log(Level.FINE,
@@ -178,63 +205,105 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             }
         }
 
+        recordProcessedWiring(bundle, wiring);
         return registrations;
     }
 
-    private List<ServiceDetails> collectServiceDetails(Bundle bundle, List<URL> serviceFileURLs, DiscoveryMode discoveryMode) {
+    private void recordProcessedWiring(Bundle bundle, BundleWiring wiring) {
+        if (wiring == null) {
+            processedWirings.remove(bundle);
+        }
+        else {
+            processedWirings.put(bundle, wiring);
+        }
+    }
+
+    private boolean hasRegisterPermission(Bundle bundle, String serviceType) {
+        boolean permitted = bundle.hasPermission(
+                new ServicePermission(serviceType, ServicePermission.REGISTER));
+        if (!permitted) {
+            log(Level.FINE, "Bundle " + bundle
+                    + " does not have permission to provide services of type: " + serviceType);
+        }
+        return permitted;
+    }
+
+    private List<ServiceDetails> collectServiceDetails(Bundle bundle, List<URL> serviceFileURLs,
+            DiscoveryMode discoveryMode, List<BundleCapability> serviceLoaderCapabilities,
+            boolean registerServiceLoaderServices) {
         List<ServiceDetails> serviceDetails = new ArrayList<>();
+
+        for (Entry<String, List<String>> providerFile : readServiceProviderFiles(serviceFileURLs).entrySet()) {
+            String registrationClassName = providerFile.getKey();
+            for (String className : providerFile.getValue()) {
+                try {
+                    final List<Hashtable<String, Object>> registrations;
+                    if (discoveryMode == DiscoveryMode.SPI_PROVIDER_HEADER) {
+                        registrations = Collections.singletonList(new Hashtable<String, Object>());
+                    }
+                    else if (discoveryMode == DiscoveryMode.AUTO_PROVIDERS_PROPERTY) {
+                        Hashtable<String, Object> properties = activator.getAutoProviderInstructions().map(
+                            Parameters::stream
+                        ).orElseGet(MapStream::empty).filterKey(
+                            i -> Glob.toPattern(i).asPredicate().test(bundle.getSymbolicName())
+                        ).values().findFirst().map(
+                            Hashtable<String, Object>::new
+                        ).orElseGet(() -> new Hashtable<String, Object>());
+                        registrations = Collections.singletonList(properties);
+                    }
+                    else if (registerServiceLoaderServices) {
+                        registrations = findServiceRegistrationProperties(
+                                serviceLoaderCapabilities, registrationClassName, className);
+                    }
+                    else {
+                        registrations = Collections.emptyList();
+                    }
+
+                    if (registrations.isEmpty()) {
+                        serviceDetails.add(new ServiceDetails(
+                                registrationClassName, className, null));
+                    }
+                    for (Hashtable<String, Object> properties : registrations) {
+                        properties.put(SpiFlyConstants.SERVICELOADER_MEDIATOR_PROPERTY, spiBundle.getBundleId());
+                        properties.put(SpiFlyConstants.PROVIDER_IMPLCLASS_PROPERTY, className);
+                        properties.put(SpiFlyConstants.PROVIDER_DISCOVERY_MODE, discoveryMode.toString());
+                        serviceDetails.add(new ServiceDetails(
+                                registrationClassName, className, properties));
+                    }
+                } catch (Exception e) {
+                    log(Level.FINE,
+                            "Could not process SPI implementation " + className + " for " + registrationClassName, e);
+                }
+            }
+        }
+
+        return serviceDetails;
+    }
+
+    Map<String, List<String>> readServiceProviderFiles(List<URL> serviceFileURLs) {
+        Map<String, Set<String>> providers = new LinkedHashMap<String, Set<String>>();
 
         for (URL serviceFileURL : serviceFileURLs) {
             log(Level.FINE, "Found SPI resource: " + serviceFileURL);
 
-            try {
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(serviceFileURL.openStream()));
-                String className = null;
-                while((className = reader.readLine()) != null) {
-                    try {
-                        className = className.trim();
+            String serviceFile = serviceFileURL.toExternalForm();
+            int idx = serviceFile.lastIndexOf('/');
+            String serviceType = serviceFile.substring(idx + 1);
+            Set<String> serviceProviders = providers.computeIfAbsent(
+                    serviceType, key -> new LinkedHashSet<String>());
 
-                        if (className.length() == 0)
-                            continue; // empty line
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(serviceFileURL.openStream(), StandardCharsets.UTF_8))) {
+                String className;
+                while ((className = reader.readLine()) != null) {
+                    int comment = className.indexOf('#');
+                    if (comment >= 0) {
+                        className = className.substring(0, comment);
+                    }
 
-                        if (className.startsWith("#"))
-                            continue; // a comment
-
-                        String serviceFile = serviceFileURL.toExternalForm();
-                        int idx = serviceFile.lastIndexOf('/');
-                        String registrationClassName = className;
-                        if (serviceFile.length() > idx) {
-                            registrationClassName = serviceFile.substring(idx + 1);
-                        }
-
-                        final Hashtable<String, Object> properties;
-                        if (discoveryMode == DiscoveryMode.SPI_PROVIDER_HEADER) {
-                            properties = new Hashtable<String, Object>();
-                        }
-                        else if (discoveryMode == DiscoveryMode.AUTO_PROVIDERS_PROPERTY) {
-                            properties = activator.getAutoProviderInstructions().map(
-                                Parameters::stream
-                            ).orElseGet(MapStream::empty).filterKey(
-                                i -> Glob.toPattern(i).asPredicate().test(bundle.getSymbolicName())
-                            ).values().findFirst().map(
-                                Hashtable<String, Object>::new
-                            ).orElseGet(() -> new Hashtable<String, Object>());
-                        }
-                        else {
-                            properties = findServiceRegistrationProperties(bundle, registrationClassName, className);
-                        }
-
-                        if (properties != null) {
-                            properties.put(SpiFlyConstants.SERVICELOADER_MEDIATOR_PROPERTY, spiBundle.getBundleId());
-                            properties.put(SpiFlyConstants.PROVIDER_IMPLCLASS_PROPERTY, className);
-                            properties.put(SpiFlyConstants.PROVIDER_DISCOVERY_MODE, discoveryMode.toString());
-                        }
-
-                        serviceDetails.add(new ServiceDetails(registrationClassName, className, properties));
-                    } catch (Exception e) {
-                        log(Level.FINE,
-                                "Could not load SPI implementation referred from " + serviceFileURL, e);
+                    className = className.trim();
+                    if (!className.isEmpty()) {
+                        serviceProviders.add(className);
                     }
                 }
             } catch (IOException e) {
@@ -242,7 +311,11 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             }
         }
 
-        return serviceDetails;
+        Map<String, List<String>> result = new LinkedHashMap<String, List<String>>();
+        for (Entry<String, Set<String>> entry : providers.entrySet()) {
+            result.put(entry.getKey(), new ArrayList<String>(entry.getValue()));
+        }
+        return result;
     }
     private Entry<List<String>, List<URL>> getFromAutoProviderProperty(Bundle bundle, Map<String, Object> customAttributes) {
         return activator.getAutoProviderInstructions().map(
@@ -254,7 +327,9 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             un -> {
                 List<URL> serviceFileURLs = getServiceFileUrls(bundle);
 
-                List<ServiceDetails> collectServiceDetails = collectServiceDetails(bundle, serviceFileURLs, DiscoveryMode.AUTO_PROVIDERS_PROPERTY);
+                List<ServiceDetails> collectServiceDetails = collectServiceDetails(bundle,
+                        serviceFileURLs, DiscoveryMode.AUTO_PROVIDERS_PROPERTY,
+                        Collections.<BundleCapability>emptyList(), false);
 
                 collectServiceDetails.stream().map(ServiceDetails::getProperties).filter(Objects::nonNull).forEach(
                     hashtable -> hashtable.forEach(customAttributes::put)
@@ -268,6 +343,28 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
     }
 
     private List<URL> getServiceFileUrls(Bundle bundle) {
+        return getServiceFileUrls(bundle, null);
+    }
+
+    List<URL> getServiceFileUrls(Bundle bundle, List<String> serviceTypes) {
+        if (serviceTypes != null) {
+            BundleWiring wiring = WiringUtils.getWiring(bundle);
+            if (wiring == null) {
+                return Collections.emptyList();
+            }
+
+            Set<String> requestedTypes = new LinkedHashSet<String>(serviceTypes);
+            Map<String, List<URL>> compatibilityEntries =
+                    getBundleRootServiceFiles(bundle, requestedTypes);
+            Set<URL> serviceFileURLs = new LinkedHashSet<URL>();
+            for (String serviceType : requestedTypes) {
+                serviceFileURLs.addAll(getServiceFileUrls(
+                        bundle, wiring, serviceType,
+                        compatibilityEntries.get(serviceType)));
+            }
+            return new ArrayList<URL>(serviceFileURLs);
+        }
+
         List<URL> serviceFileURLs = new ArrayList<URL>();
 
         Enumeration<URL> entries = bundle.findEntries(METAINF_SERVICES, "*", false);
@@ -282,7 +379,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                 if (entry.equals("."))
                     continue;
 
-                URL url = bundle.getResource(entry);
+                URL url = bundle.getEntry(entry);
                 if (url != null) {
                     serviceFileURLs.addAll(getMetaInfServiceURLsFromJar(url));
                 }
@@ -290,6 +387,331 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         }
 
         return serviceFileURLs;
+    }
+
+    private Map<String, List<URL>> getBundleRootServiceFiles(Bundle bundle,
+            Set<String> serviceTypes) {
+        Map<String, List<URL>> result = new HashMap<String, List<URL>>();
+        Enumeration<URL> entries = bundle.findEntries(
+                METAINF_SERVICES, "*", false);
+        if (entries == null) {
+            return result;
+        }
+        while (entries.hasMoreElements()) {
+            URL entry = entries.nextElement();
+            String path = entry.getPath();
+            int separator = path.lastIndexOf('/');
+            String serviceType = separator < 0
+                    ? path : path.substring(separator + 1);
+            if (serviceTypes.contains(serviceType)) {
+                result.computeIfAbsent(serviceType,
+                        key -> new ArrayList<URL>()).add(entry);
+            }
+        }
+        return result;
+    }
+
+    private List<URL> getServiceFileUrls(Bundle bundle, BundleWiring wiring,
+            String serviceType, List<URL> compatibilityEntries) {
+        Set<URL> urls = new LinkedHashSet<URL>();
+        if (addExactBundleClassPathServiceFiles(wiring, serviceType, urls)) {
+            return new ArrayList<URL>(urls);
+        }
+
+        List<URL> rootEntries = wiring.findEntries(
+                METAINF_SERVICES, serviceType, 0);
+        if (rootEntries != null) {
+            urls.addAll(rootEntries);
+        }
+        if (urls.isEmpty() && compatibilityEntries != null) {
+            urls.addAll(compatibilityEntries);
+        }
+        addBundleClassPathServiceFiles(bundle,
+                Collections.singleton(serviceType), urls);
+        return new ArrayList<URL>(urls);
+    }
+
+    private boolean addExactBundleClassPathServiceFiles(BundleWiring wiring,
+            String serviceType, Set<URL> serviceFileURLs) {
+        List<URL> manifests = wiring.findEntries("META-INF", "MANIFEST.MF", 0);
+        if (manifests == null || manifests.isEmpty()) {
+            return false;
+        }
+
+        List<ExactBundleContainer> containers =
+                new ArrayList<ExactBundleContainer>();
+        for (URL manifestUrl : manifests) {
+            try (InputStream stream = manifestUrl.openStream()) {
+                String bundleClassPath = new Manifest(stream).getMainAttributes()
+                        .getValue(Constants.BUNDLE_CLASSPATH);
+                containers.add(new ExactBundleContainer(
+                        manifestUrl, parseBundleClassPath(bundleClassPath)));
+            }
+            catch (IOException | RuntimeException e) {
+                log(Level.FINE, "Could not read exact bundle manifest "
+                        + manifestUrl, e);
+                containers.add(new ExactBundleContainer(
+                        manifestUrl, Collections.<String>emptyList()));
+            }
+        }
+
+        ExactBundleContainer host = containers.get(0);
+        for (String entry : host.bundleClassPath) {
+            if (isRootClassPathEntry(entry)) {
+                addExactRootServiceFile(
+                        host, serviceType, serviceFileURLs);
+                continue;
+            }
+            for (ExactBundleContainer candidate : containers) {
+                ExactClassPathEntry match = findExactBundleClassPathEntry(
+                        wiring, candidate, entry, serviceType);
+                if (match.exists) {
+                    serviceFileURLs.addAll(match.serviceFiles);
+                    break;
+                }
+            }
+        }
+
+        for (int i = 1; i < containers.size(); i++) {
+            ExactBundleContainer fragment = containers.get(i);
+            for (String entry : fragment.bundleClassPath) {
+                if (isRootClassPathEntry(entry)) {
+                    addExactRootServiceFile(
+                            fragment, serviceType, serviceFileURLs);
+                    continue;
+                }
+                ExactClassPathEntry match = findExactBundleClassPathEntry(
+                        wiring, fragment, entry, serviceType);
+                if (match.exists) {
+                    serviceFileURLs.addAll(match.serviceFiles);
+                }
+            }
+        }
+        return true;
+    }
+
+    private List<String> parseBundleClassPath(String bundleClassPath) {
+        if (bundleClassPath == null) {
+            return Collections.singletonList(".");
+        }
+
+        List<String> result = new ArrayList<String>();
+        Parameters entries = new Parameters(bundleClassPath);
+        for (String key : entries.keySet()) {
+            result.add(ConsumerHeaderProcessor.removeDuplicateMarker(key).trim());
+        }
+        return result;
+    }
+
+    private boolean isRootClassPathEntry(String entry) {
+        return ".".equals(entry) || "/".equals(entry);
+    }
+
+    private void addExactRootServiceFile(ExactBundleContainer container,
+            String serviceType, Set<URL> serviceFileURLs) {
+        try {
+            URL resource = exactEntry(container,
+                    METAINF_SERVICES + "/" + serviceType);
+            if (canOpen(resource)) {
+                serviceFileURLs.add(resource);
+            }
+        }
+        catch (IOException | RuntimeException e) {
+            log(Level.FINE, "Could not resolve exact root SPI resource for "
+                    + serviceType + " from " + container.manifest, e);
+        }
+    }
+
+    private ExactClassPathEntry findExactBundleClassPathEntry(
+            BundleWiring wiring, ExactBundleContainer container, String entry,
+            String serviceType) {
+        try {
+            URL entryUrl = findExactRawEntry(wiring, container, entry);
+            if (entryUrl != null) {
+                if (entryUrl.getPath().endsWith("/")) {
+                    return exactDirectoryClassPathEntry(
+                            wiring, container, entry, serviceType);
+                }
+                if (!isZip(entryUrl)) {
+                    return ExactClassPathEntry.FOUND_EMPTY;
+                }
+                return new ExactClassPathEntry(true,
+                        getMetaInfServiceURLsFromJar(
+                                entryUrl, Collections.singleton(serviceType)));
+            }
+
+            if (inferredDirectoryExists(wiring, container, entry)) {
+                return exactDirectoryClassPathEntry(
+                        wiring, container, entry, serviceType);
+            }
+            return ExactClassPathEntry.NOT_FOUND;
+        }
+        catch (IOException | RuntimeException e) {
+            log(Level.FINE, "Could not read SPI resource for " + serviceType
+                    + " from exact Bundle-ClassPath entry " + entry, e);
+            return ExactClassPathEntry.NOT_FOUND;
+        }
+    }
+
+    private URL findExactRawEntry(BundleWiring wiring,
+            ExactBundleContainer container, String entry) throws IOException {
+        String path = normalizedDirectoryPath(entry);
+        if (path.isEmpty()) {
+            return null;
+        }
+
+        int separator = path.lastIndexOf('/');
+        String parent = separator < 0 ? "/" : path.substring(0, separator);
+        String name = path.substring(separator + 1);
+        List<URL> entries = wiring.findEntries(parent, name, 0);
+        if (entries == null) {
+            return null;
+        }
+
+        URL expected = exactEntry(container, path);
+        URL expectedDirectory = exactEntry(container, path + "/");
+        for (URL candidate : entries) {
+            if (candidate.sameFile(expected)
+                    || candidate.sameFile(expectedDirectory)) {
+                return candidate;
+            }
+        }
+        return null;
+    }
+
+    private ExactClassPathEntry exactDirectoryClassPathEntry(
+            BundleWiring wiring, ExactBundleContainer container, String entry,
+            String serviceType) {
+        try {
+            return new ExactClassPathEntry(true,
+                    exactDirectoryServiceFiles(
+                            wiring, container, entry, serviceType));
+        }
+        catch (IOException | RuntimeException e) {
+            log(Level.FINE, "Could not enumerate SPI resource for " + serviceType
+                    + " from selected Bundle-ClassPath directory " + entry, e);
+            return ExactClassPathEntry.FOUND_EMPTY;
+        }
+    }
+
+    private boolean inferredDirectoryExists(BundleWiring wiring,
+            ExactBundleContainer container, String entry) throws IOException {
+        String path = normalizedDirectoryPath(entry);
+        if (path.isEmpty()) {
+            return false;
+        }
+
+        List<URL> contents = wiring.findEntries(
+                path, "*", BundleWiring.FINDENTRIES_RECURSE);
+        if (contents == null) {
+            return false;
+        }
+        for (URL content : contents) {
+            if (isFromExactContainer(container, content)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private List<URL> exactDirectoryServiceFiles(BundleWiring wiring,
+            ExactBundleContainer container, String entry, String serviceType)
+            throws IOException {
+        String path = normalizedDirectoryPath(entry) + "/"
+                + METAINF_SERVICES + "/" + serviceType;
+        int separator = path.lastIndexOf('/');
+        List<URL> resources = wiring.findEntries(
+                path.substring(0, separator), path.substring(separator + 1), 0);
+        if (resources == null) {
+            return Collections.emptyList();
+        }
+
+        URL expected = exactEntry(container, path);
+        List<URL> exact = new ArrayList<URL>();
+        for (URL resource : resources) {
+            if (resource.sameFile(expected) && canOpen(resource)) {
+                exact.add(resource);
+            }
+        }
+        return exact;
+    }
+
+    private String normalizedDirectoryPath(String entry) {
+        String path = trimLeadingSlash(entry);
+        int end = path.length();
+        while (end > 0 && path.charAt(end - 1) == '/') {
+            end--;
+        }
+        return path.substring(0, end);
+    }
+
+    private boolean isFromExactContainer(
+            ExactBundleContainer container, URL resource) throws IOException {
+        return resource.toExternalForm().startsWith(
+                exactEntry(container, "").toExternalForm());
+    }
+
+    private URL exactEntry(ExactBundleContainer container, String path)
+            throws IOException {
+        return new URL(container.manifest, "../" + trimLeadingSlash(path));
+    }
+
+    private String trimLeadingSlash(String path) {
+        int start = 0;
+        while (start < path.length() && path.charAt(start) == '/') {
+            start++;
+        }
+        return path.substring(start);
+    }
+
+    private boolean canOpen(URL resource) {
+        try (InputStream stream = resource.openStream()) {
+            return true;
+        }
+        catch (IOException | RuntimeException e) {
+            return false;
+        }
+    }
+
+    private boolean isZip(URL resource) {
+        try (InputStream raw = resource.openStream();
+                BufferedInputStream stream = new BufferedInputStream(raw)) {
+            int first = stream.read();
+            int second = stream.read();
+            int third = stream.read();
+            int fourth = stream.read();
+            return first == 0x50 && second == 0x4b
+                    && ((third == 0x03 && fourth == 0x04)
+                            || (third == 0x05 && fourth == 0x06)
+                            || (third == 0x07 && fourth == 0x08));
+        }
+        catch (IOException | RuntimeException e) {
+            return false;
+        }
+    }
+
+    private void addBundleClassPathServiceFiles(Bundle bundle,
+            Set<String> serviceTypes, Set<URL> serviceFileURLs) {
+        Dictionary<String, String> headers = bundle.getHeaders();
+        if (headers == null) {
+            return;
+        }
+        Object bcp = headers.get(Constants.BUNDLE_CLASSPATH);
+        if (!(bcp instanceof String)) {
+            return;
+        }
+
+        for (String entry : ((String) bcp).split(",")) {
+            entry = entry.trim();
+            if (entry.equals(".")) {
+                continue;
+            }
+            URL url = bundle.getEntry(entry);
+            if (url != null) {
+                serviceFileURLs.addAll(
+                        getMetaInfServiceURLsFromJar(url, serviceTypes));
+            }
+        }
     }
 
     private String getHeaderFromBundleOrFragment(Bundle bundle, String headerName) {
@@ -342,84 +764,43 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         return idx >= 0;
     }
 
-    // An empty list returned means 'all SPIs'
-    // A return value of null means no SPIs
-    // A populated list means: only these SPIs
-    private List<String> readServiceLoaderMediatorCapabilityMetadata(Bundle bundle, Map<String, Object> customAttributes) throws InvalidSyntaxException {
-        String requirementHeader = getHeaderFromBundleOrFragment(bundle, SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE);
-        if (requirementHeader == null)
-            return null;
-
-        Parameters requirements = OSGiHeader.parseHeader(requirementHeader);
-        Entry<String, ? extends Map<String, String>> extenderRequirement = ConsumerHeaderProcessor.findRequirement(requirements, SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE, SpiFlyConstants.REGISTRAR_EXTENDER_NAME);
-        if (extenderRequirement == null)
-            return null;
-
-        Parameters capabilities;
-        String capabilityHeader = getHeaderFromBundleOrFragment(bundle, SpiFlyConstants.PROVIDE_CAPABILITY, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE);
-        if (capabilityHeader == null) {
-            capabilities = new Parameters();
-        } else {
-            capabilities = OSGiHeader.parseHeader(capabilityHeader);
-        }
-
-        List<String> serviceNames = new ArrayList<String>();
-        for (Entry<String, ? extends Map<String, String>> serviceLoaderCapability : ConsumerHeaderProcessor.findAllMetadata(capabilities, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE)) {
-            for (Entry<String, String> entry : serviceLoaderCapability.getValue().entrySet()) {
-                if (SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE.equals(entry.getKey())) {
-                    serviceNames.add(entry.getValue().trim());
-                    continue;
-                }
-                if (SpiFlyConstants.REGISTER_DIRECTIVE.equals(entry.getKey()) && entry.getValue().equals("")) {
-                    continue;
-                }
-
-                customAttributes.put(entry.getKey(), entry.getValue());
+    private List<Hashtable<String, Object>> findServiceRegistrationProperties(
+            List<BundleCapability> capabilities, String spiName, String implName) {
+        List<Hashtable<String, Object>> registrations =
+                new ArrayList<Hashtable<String, Object>>();
+        for (BundleCapability capability : capabilities) {
+            Map<String, Object> attributes = capability.getAttributes();
+            if (!spiName.equals(attributes.get(
+                    SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE))) {
+                continue;
             }
-        }
-        return serviceNames;
-    }
 
-    // null means don't register,
-    // otherwise the return value should be taken as the service registration properties
-    private Hashtable<String, Object> findServiceRegistrationProperties(Bundle bundle, String spiName, String implName) {
-        Object capabilityHeader = getHeaderFromBundleOrFragment(bundle, SpiFlyConstants.PROVIDE_CAPABILITY);
-        if (capabilityHeader == null)
-            return null;
-
-        Parameters capabilities = OSGiHeader.parseHeader(capabilityHeader.toString());
-
-        for (Map.Entry<String, Attrs> entry : capabilities.entrySet()) {
-            String key = ConsumerHeaderProcessor.removeDuplicateMarker(entry.getKey());
-            Attrs attrs = entry.getValue();
-
-            if (!SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE.equals(key))
+            String register = capability.getDirectives().get(REGISTER_DIRECTIVE_NAME);
+            if (register != null && !register.equals(implName)) {
                 continue;
-
-            if (!attrs.containsKey(SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE) ||
-                    !attrs.get(SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE).equals(spiName))
-                continue;
-
-            if (attrs.containsKey(SpiFlyConstants.REGISTER_DIRECTIVE) &&
-                    !attrs.get(SpiFlyConstants.REGISTER_DIRECTIVE).equals(implName))
-                continue;
+            }
 
             Hashtable<String, Object> properties = new Hashtable<String, Object>();
-            for (Map.Entry<String, String> prop : attrs.entrySet()) {
-                if (SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE.equals(prop.getKey()) ||
-                        SpiFlyConstants.REGISTER_DIRECTIVE.equals(prop.getKey()) ||
-                        key.startsWith("."))
+            for (Map.Entry<String, Object> attribute : attributes.entrySet()) {
+                String name = attribute.getKey();
+                if (SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE.equals(name)
+                        || name.startsWith(".")) {
                     continue;
+                }
 
-                properties.put(prop.getKey(), prop.getValue());
+                properties.put(name, attribute.getValue());
             }
-            return properties;
+            registrations.add(properties);
         }
-
-        return null;
+        return registrations;
     }
 
     private List<URL> getMetaInfServiceURLsFromJar(URL url) {
+        return getMetaInfServiceURLsFromJar(url, null);
+    }
+
+    private List<URL> getMetaInfServiceURLsFromJar(
+            URL url, Set<String> serviceTypes) {
         List<URL> urls = new ArrayList<URL>();
         try {
             JarInputStream jis = null;
@@ -428,8 +809,10 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
                 JarEntry je = null;
                 while((je = jis.getNextJarEntry()) != null) {
-                    if (je.getName().startsWith(METAINF_SERVICES) &&
-                        je.getName().length() > (METAINF_SERVICES.length() + 1)) {
+                    if (je.getName().startsWith(METAINF_SERVICES + "/")
+                            && je.getName().length() > (METAINF_SERVICES.length() + 1)
+                            && (serviceTypes == null || serviceTypes.contains(
+                                    je.getName().substring(METAINF_SERVICES.length() + 1)))) {
                         urls.add(new URL("jar:" + url + "!/" + je.getName()));
                     }
                 }
@@ -446,18 +829,48 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
     @Override
     public void modifiedBundle(Bundle bundle, BundleEvent event, Object registrations) {
-        // implementation is unnecessary for this use case
+        if (event != null && event.getType() == BundleEvent.STARTED
+                && registrations != null
+                && processedWirings.get(bundle) != WiringUtils.getWiring(bundle)) {
+            // Some frameworks deliver STARTING before publishing the refreshed host
+            // wiring. Reprocess at STARTED when the effective wiring changed.
+            reprocessBundle(bundle, registrations);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    void reprocessBundle(Bundle bundle, Object registrations) {
+        List<ServiceRegistration> current = (List<ServiceRegistration>) registrations;
+        synchronized (current) {
+            activator.unregisterProviderBundle(bundle);
+            unregister(current);
+            current.clear();
+
+            List<ServiceRegistration> replacements = addingBundle(bundle, null);
+            if (replacements != null) {
+                current.addAll(replacements);
+            }
+        }
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void removedBundle(Bundle bundle, BundleEvent event, Object registrations) {
+        processedWirings.remove(bundle);
+        activator.providerBundleStopped(bundle);
         activator.unregisterProviderBundle(bundle);
 
         if (registrations == null)
             return;
 
-        for (ServiceRegistration reg : (List<ServiceRegistration>) registrations) {
+        List<ServiceRegistration> current = (List<ServiceRegistration>) registrations;
+        synchronized (current) {
+            unregister(current);
+        }
+    }
+
+    private void unregister(List<ServiceRegistration> registrations) {
+        for (ServiceRegistration reg : registrations) {
             try {
                 reg.unregister();
                 log(Level.FINE, "Unregistered: " + reg);
@@ -477,6 +890,31 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
     private void log(Level level, String message, Throwable th) {
         activator.log(level, message, th);
+    }
+
+    private static final class ExactBundleContainer {
+        private final URL manifest;
+        private final List<String> bundleClassPath;
+
+        private ExactBundleContainer(URL manifest, List<String> bundleClassPath) {
+            this.manifest = manifest;
+            this.bundleClassPath = bundleClassPath;
+        }
+    }
+
+    private static final class ExactClassPathEntry {
+        private static final ExactClassPathEntry NOT_FOUND =
+                new ExactClassPathEntry(false, Collections.<URL>emptyList());
+        private static final ExactClassPathEntry FOUND_EMPTY =
+                new ExactClassPathEntry(true, Collections.<URL>emptyList());
+
+        private final boolean exists;
+        private final List<URL> serviceFiles;
+
+        private ExactClassPathEntry(boolean exists, List<URL> serviceFiles) {
+            this.exists = exists;
+            this.serviceFiles = serviceFiles;
+        }
     }
 
     enum DiscoveryMode {

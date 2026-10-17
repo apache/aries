@@ -53,6 +53,7 @@ import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
+import org.osgi.framework.ServicePermission;
 import org.osgi.framework.Version;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
@@ -205,6 +206,7 @@ public class ClientWeavingHookOSGi43Test  {
         EasyMock.expect(providerBundle.getBundleContext()).andReturn(bc).anyTimes();
         EasyMock.expect(providerBundle.getVersion()).andReturn(version).anyTimes();
         EasyMock.expect(providerBundle.adapt(BundleRevision.class)).andReturn(bundleRevision).anyTimes();
+        EasyMock.expect(providerBundle.hasPermission(EasyMock.isA(ServicePermission.class))).andReturn(true).anyTimes();
         EasyMock.<Class<?>>expect(providerBundle.loadClass(EasyMock.anyObject(String.class))).andAnswer(new IAnswer<Class<?>>() {
             @Override
             public Class<?> answer() throws Throwable {
@@ -245,6 +247,7 @@ public class ClientWeavingHookOSGi43Test  {
         EasyMock.expect(consumerBundle.getBundleContext()).andReturn(bc).anyTimes();
         EasyMock.expect(consumerBundle.getBundleId()).andReturn(Long.MAX_VALUE).anyTimes();
         EasyMock.expect(consumerBundle.adapt(BundleRevision.class)).andReturn(null).anyTimes();
+        EasyMock.expect(consumerBundle.hasPermission(EasyMock.isA(ServicePermission.class))).andReturn(true).anyTimes();
         EasyMock.replay(consumerBundle);
 
         List<Bundle> allBundles = new ArrayList<Bundle>(Arrays.asList(otherBundles));

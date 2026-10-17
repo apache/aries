@@ -59,6 +59,7 @@ import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
+import org.osgi.framework.ServicePermission;
 import org.osgi.framework.Version;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
@@ -192,6 +193,70 @@ public class ClientWeavingHookTest {
         Method method = cls.getMethod("testService2", new Class [] {String.class});
         Object result = method.invoke(cls.getDeclaredConstructor().newInstance(), "hello");
         assertEquals(Collections.singleton("olleh"), result);
+    }
+
+    @Test
+    public void testServiceLoaderLoadInstalled() throws Exception {
+        Dictionary<String, String> consumerHeaders = new Hashtable<String, String>();
+        consumerHeaders.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "*");
+
+        Bundle providerBundle = mockProviderBundle("impl1", 1);
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI",
+                providerBundle, new HashMap<String, Object>());
+
+        Bundle consumerBundle = mockConsumerBundle(consumerHeaders, providerBundle);
+        activator.addConsumerWeavingData(
+                consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
+
+        Bundle spiFlyBundle = mockSpiFlyBundle(
+                "spifly", Version.parseVersion("1.9.4"),
+                consumerBundle, providerBundle);
+        WeavingHook wh = new ClientWeavingHook(
+                spiFlyBundle.getBundleContext(), activator);
+
+        URL clsUrl = getClass().getResource("TestClient.class");
+        assertNotNull("Precondition", clsUrl);
+        WovenClass wc = new MyWovenClass(clsUrl,
+                "org.apache.aries.spifly.dynamic.TestClient", consumerBundle);
+        wh.weave(wc);
+        Class<?> cls = wc.getDefinedClass();
+        assertTrue(activator.getWeavingData(consumerBundle).toString(),
+                activator.getWeavingData(consumerBundle).stream()
+                .anyMatch(data -> "loadInstalled".equals(data.getMethodName())));
+        Method method = cls.getMethod("testInstalled", String.class);
+        Object result = method.invoke(cls.getDeclaredConstructor().newInstance(), "hello");
+        assertEquals(Collections.singleton("olleh"), result);
+    }
+
+    @Test
+    public void testServiceLoaderMethodReferences() throws Exception {
+        Dictionary<String, String> consumerHeaders = new Hashtable<String, String>();
+        consumerHeaders.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "*");
+
+        Bundle providerBundle = mockProviderBundle("impl1", 1);
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI",
+                providerBundle, new HashMap<String, Object>());
+        Bundle consumerBundle = mockConsumerBundle(consumerHeaders, providerBundle);
+        activator.addConsumerWeavingData(
+                consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
+
+        Bundle spiFlyBundle = mockSpiFlyBundle(
+                "spifly", Version.parseVersion("1.9.4"),
+                consumerBundle, providerBundle);
+        WeavingHook wh = new ClientWeavingHook(
+                spiFlyBundle.getBundleContext(), activator);
+        URL clsUrl = getClass().getResource("TestClient.class");
+        assertNotNull("Precondition", clsUrl);
+        WovenClass wc = new MyWovenClass(clsUrl,
+                "org.apache.aries.spifly.dynamic.TestClient", consumerBundle);
+        wh.weave(wc);
+        Class<?> cls = wc.getDefinedClass();
+        Method method = cls.getMethod("testMethodReferences",
+                String.class, ClassLoader.class);
+        Object result = method.invoke(cls.getDeclaredConstructor().newInstance(),
+                "hello", getClass().getClassLoader());
+        assertEquals(new HashSet<String>(Arrays.asList(
+                "load:olleh", "loader:olleh", "installed:olleh")), result);
     }
 
     @Test
@@ -769,8 +834,10 @@ public class ClientWeavingHookTest {
         }
         EasyMock.expect(providerBundle.getSymbolicName()).andReturn(bsn).anyTimes();
         EasyMock.expect(providerBundle.getBundleId()).andReturn(id).anyTimes();
+        EasyMock.expect(providerBundle.getState()).andReturn(Bundle.ACTIVE).anyTimes();
         EasyMock.expect(providerBundle.getBundleContext()).andReturn(bc).anyTimes();
         EasyMock.expect(providerBundle.getVersion()).andReturn(version).anyTimes();
+        EasyMock.expect(providerBundle.hasPermission(EasyMock.isA(ServicePermission.class))).andReturn(true).anyTimes();
         EasyMock.expect(providerBundle.getEntryPaths("/")).andAnswer(new IAnswer<Enumeration<String>>() {
             @Override
             public Enumeration<String> answer() throws Throwable {
@@ -820,6 +887,7 @@ public class ClientWeavingHookTest {
         EasyMock.expect(consumerBundle.getBundleContext()).andReturn(bc).anyTimes();
         EasyMock.expect(consumerBundle.getBundleId()).andReturn(Long.MAX_VALUE).anyTimes();
         EasyMock.expect(consumerBundle.adapt(BundleRevision.class)).andReturn(null).anyTimes();
+        EasyMock.expect(consumerBundle.hasPermission(EasyMock.isA(ServicePermission.class))).andReturn(true).anyTimes();
         EasyMock.replay(consumerBundle);
 
         List<Bundle> allBundles = new ArrayList<Bundle>(Arrays.asList(otherBundles));

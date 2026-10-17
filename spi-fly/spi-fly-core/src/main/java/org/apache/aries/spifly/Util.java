@@ -18,10 +18,14 @@
  */
 package org.apache.aries.spifly;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.security.AccessControlException;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
+import java.nio.charset.StandardCharsets;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
@@ -29,9 +33,12 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.logging.Level;
@@ -39,7 +46,12 @@ import java.util.logging.Level;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleReference;
 import org.osgi.framework.Constants;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServicePermission;
+import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.framework.wiring.BundleWiring;
+
+import aQute.bnd.annotation.baseline.BaselineIgnore;
 
 /**
  * Methods used from ASM-generated code. They store, change and reset the thread context classloader.
@@ -47,6 +59,17 @@ import org.osgi.framework.ServicePermission;
  */
 public class Util {
     static ThreadLocal<ClassLoader> storedClassLoaders = new ThreadLocal<ClassLoader>();
+    private static final ClassLoader EMPTY_PROVIDER_CLASSLOADER = new ClassLoader(null) {
+        @Override
+        public URL getResource(String name) {
+            return null;
+        }
+
+        @Override
+        public Enumeration<URL> getResources(String name) {
+            return java.util.Collections.emptyEnumeration();
+        }
+    };
 
     // Provided as static method to make it easier to call from ASM-modified code
     public static void storeContextClassloader() {
@@ -72,50 +95,39 @@ public class Util {
     }
 
     public static <C,S> ServiceLoader<S> serviceLoaderLoad(Class<S> service, Class<C> caller) {
-        if (BaseActivator.activator == null) {
-            // The system is not yet initialized. We can't do anything.
-            return null;
+        final BaseActivator activator = BaseActivator.activator;
+        final Object session = activator == null ? null : activator.getActiveSession();
+        if (!isSessionActive(activator, session)) {
+            return emptyServiceLoader(service);
         }
 
-        ClassLoader bundleLoader = AccessController.doPrivileged(
-            new PrivilegedAction<ClassLoader>() {
-                @Override
-                public ClassLoader run() {
-                    return caller.getClassLoader();
-                }
-            }
-        );
-
-        if (!(bundleLoader instanceof BundleReference)) {
-            BaseActivator.activator.log(Level.FINE, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
-            return ServiceLoader.load(service);
+        final Bundle consumerBundle = getConsumerBundle(caller, activator);
+        if (consumerBundle == null) {
+            return isSessionActive(activator, session)
+                    ? ServiceLoader.load(service) : emptyServiceLoader(service);
         }
-
-        BundleReference bundleReference = (BundleReference)bundleLoader;
-
         final ClassLoader bundleClassloader = findContextClassloader(
-            bundleReference.getBundle(), ServiceLoader.class.getName(), "load", service);
+            activator, session, consumerBundle, ServiceLoader.class.getName(),
+            "load", service, true);
 
-        if (bundleClassloader == null) {
-            return ServiceLoader.load(service);
+        if (!isSessionActive(activator, session)) {
+            return emptyServiceLoader(service);
         }
 
-        Thread thread = Thread.currentThread();
+        if (bundleClassloader == null
+                && !activator.isStandardConsumer(consumerBundle)) {
+            return ServiceLoader.load(service);
+        }
 
         return AccessController.doPrivileged(
             new PrivilegedAction<ServiceLoader<S>>() {
                 @Override
                 public ServiceLoader<S> run() {
-                    ClassLoader contextClassLoader = thread.getContextClassLoader();
-
-                    try {
-                        thread.setContextClassLoader(bundleClassloader);
-
-                        return ServiceLoader.load(service);
-                    }
-                    finally {
-                        thread.setContextClassLoader(contextClassLoader);
-                    }
+                    ClassLoader contextClassLoader =
+                            Thread.currentThread().getContextClassLoader();
+                    return ServiceLoader.load(service, new ProviderViewClassLoader(
+                            contextClassLoader, bundleClassloader, consumerBundle,
+                            service.getName(), activator, session));
                 }
             }
         );
@@ -125,47 +137,141 @@ public class Util {
     public static <C,S> ServiceLoader<S> serviceLoaderLoad(
         Class<S> service, ClassLoader specifiedClassLoader, Class<C> caller) {
 
-        if (BaseActivator.activator == null) {
-            // The system is not yet initialized. We can't do anything.
-            return null;
+        final BaseActivator activator = BaseActivator.activator;
+        final Object session = activator == null ? null : activator.getActiveSession();
+        if (!isSessionActive(activator, session)) {
+            return emptyServiceLoader(service);
+        }
+
+        Bundle consumerBundle = getConsumerBundle(caller, activator);
+        if (consumerBundle == null) {
+            return isSessionActive(activator, session)
+                    ? ServiceLoader.load(service, specifiedClassLoader)
+                    : emptyServiceLoader(service);
+        }
+        final ClassLoader bundleClassloader = findContextClassloader(
+            activator, session, consumerBundle, ServiceLoader.class.getName(),
+            "load", service, true);
+
+        if (!isSessionActive(activator, session)) {
+            return emptyServiceLoader(service);
+        }
+
+        if (bundleClassloader == null) {
+            if (activator.isStandardConsumer(consumerBundle)) {
+                return ServiceLoader.load(service, new ProviderViewClassLoader(
+                        specifiedClassLoader, null, consumerBundle, service.getName(),
+                        activator, session));
+            }
+            return ServiceLoader.load(service, specifiedClassLoader);
+        }
+
+        if (activator.isStandardConsumer(consumerBundle)) {
+            return ServiceLoader.load(service, new ProviderViewClassLoader(
+                    specifiedClassLoader, bundleClassloader, consumerBundle,
+                    service.getName(), activator, session));
+        }
+        return ServiceLoader.load(service, new WrapperCL(specifiedClassLoader,
+                bundleClassloader, activator, session));
+    }
+
+    @BaselineIgnore("1.4.0")
+    public static <C,S> ServiceLoader<S> serviceLoaderLoadInstalled(
+            Class<S> service, Class<C> caller) {
+        final BaseActivator activator = BaseActivator.activator;
+        final Object session = activator == null ? null : activator.getActiveSession();
+        if (!isSessionActive(activator, session)) {
+            return emptyServiceLoader(service);
+        }
+
+        Bundle consumerBundle = getConsumerBundle(caller, activator);
+        if (consumerBundle == null) {
+            return isSessionActive(activator, session)
+                    ? ServiceLoader.loadInstalled(service) : emptyServiceLoader(service);
+        }
+
+        ClassLoader bundleClassloader = findContextClassloader(
+                activator, session, consumerBundle, ServiceLoader.class.getName(),
+                "loadInstalled", service, true);
+
+        if (!isSessionActive(activator, session)) {
+            return emptyServiceLoader(service);
+        }
+        if (bundleClassloader == null
+                && !activator.isStandardConsumer(consumerBundle)) {
+            return ServiceLoader.loadInstalled(service);
+        }
+
+        ClassLoader installedClassLoader = getInstalledClassLoader();
+        return ServiceLoader.load(service, new ProviderViewClassLoader(
+                installedClassLoader, bundleClassloader, consumerBundle,
+                service.getName(), activator, session));
+    }
+
+    private static <S> ServiceLoader<S> emptyServiceLoader(Class<S> service) {
+        return ServiceLoader.load(service, EMPTY_PROVIDER_CLASSLOADER);
+    }
+
+    private static boolean isSessionActive(BaseActivator activator, Object session) {
+        return activator != null && activator.isSessionActive(session);
+    }
+
+    private static ClassLoader getInstalledClassLoader() {
+        return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+            @Override
+            public ClassLoader run() {
+                ClassLoader loader = ClassLoader.getSystemClassLoader();
+                while (loader != null && loader.getParent() != null) {
+                    loader = loader.getParent();
+                }
+                return loader;
+            }
+        });
+    }
+
+    private static Bundle getConsumerBundle(final Class<?> caller,
+            BaseActivator activator) {
+        Bundle bundle = FrameworkUtil.getBundle(caller);
+        if (bundle != null) {
+            return bundle;
         }
 
         ClassLoader bundleLoader = AccessController.doPrivileged(
-            new PrivilegedAction<ClassLoader>() {
-                @Override
-                public ClassLoader run() {
-                    return caller.getClassLoader();
-                }
-            }
-        );
-
-        if (!(bundleLoader instanceof BundleReference)) {
-            BaseActivator.activator.log(Level.FINE, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
-            return ServiceLoader.load(service, specifiedClassLoader);
+                new PrivilegedAction<ClassLoader>() {
+                    @Override
+                    public ClassLoader run() {
+                        return caller.getClassLoader();
+                    }
+                });
+        if (bundleLoader instanceof BundleReference) {
+            return ((BundleReference) bundleLoader).getBundle();
         }
 
-        BundleReference bundleReference = (BundleReference)bundleLoader;
-
-        final ClassLoader bundleClassloader = findContextClassloader(
-            bundleReference.getBundle(), ServiceLoader.class.getName(), "load", service);
-
-        if (bundleClassloader == null) {
-            return ServiceLoader.load(service, specifiedClassLoader);
-        }
-
-        return ServiceLoader.load(service, new WrapperCL(specifiedClassLoader, bundleClassloader));
+        activator.log(Level.FINE,
+                "Could not identify consuming bundle for class " + caller.getName());
+        return null;
     }
 
     public static void fixContextClassloader(String cls, String method, Class<?> clsArg, ClassLoader bundleLoader) {
-        BundleReference br = getBundleReference(bundleLoader);
+        final BaseActivator activator = BaseActivator.activator;
+        final Object session = activator == null ? null : activator.getActiveSession();
+        if (!isSessionActive(activator, session)) {
+            return;
+        }
+
+        BundleReference br = getBundleReference(bundleLoader, activator);
 
         if (br == null) {
             return;
         }
 
-        final ClassLoader cl = findContextClassloader(br.getBundle(), cls, method, clsArg);
+        final ClassLoader cl = findContextClassloader(
+                activator, session, br.getBundle(), cls, method, clsArg, false);
+        if (!isSessionActive(activator, session)) {
+            return;
+        }
         if (cl != null) {
-            BaseActivator.activator.log(Level.FINE, "Temporarily setting Thread Context Classloader to: " + cl);
+            activator.log(Level.FINE, "Temporarily setting Thread Context Classloader to: " + cl);
             AccessController.doPrivileged(new PrivilegedAction<Void>() {
                 @Override
                 public Void run() {
@@ -174,30 +280,26 @@ public class Util {
                 }
             });
         } else {
-            BaseActivator.activator.log(Level.FINE, "No classloader found for " + cls + ":" + method + "(" + clsArg + ")");
+            activator.log(Level.FINE, "No classloader found for " + cls + ":" + method + "(" + clsArg + ")");
         }
     }
 
-    private static ClassLoader findContextClassloader(Bundle consumerBundle, String className, String methodName, Class<?> clsArg) {
-        BaseActivator activator = BaseActivator.activator;
+    private static ClassLoader findContextClassloader(BaseActivator activator,
+            Object session, Bundle consumerBundle, String className,
+            String methodName, Class<?> clsArg, boolean permissionAware) {
+        if (!isSessionActive(activator, session)) {
+            return null;
+        }
 
         String requestedClass;
         Map<Pair<Integer, String>, String> args;
-        if (ServiceLoader.class.getName().equals(className) && "load".equals(methodName)) {
+        boolean serviceLoaderCall = ServiceLoader.class.getName().equals(className)
+                && ("load".equals(methodName) || "loadInstalled".equals(methodName));
+        if (serviceLoaderCall) {
             requestedClass = clsArg.getName();
             args = new HashMap<Pair<Integer,String>, String>();
             args.put(new Pair<Integer, String>(0, Class.class.getName()), requestedClass);
 
-            SecurityManager sm = System.getSecurityManager();
-            if (sm != null) {
-                try {
-                    sm.checkPermission(new ServicePermission(requestedClass, ServicePermission.GET));
-                } catch (AccessControlException ace) {
-                    // access denied
-                    activator.log(Level.FINE, "No permission to obtain service of type: " + requestedClass);
-                    return null;
-                }
-            }
         } else {
             requestedClass = className;
             args = null; // only supported on ServiceLoader.load() at the moment
@@ -216,31 +318,61 @@ public class Util {
             }
         }
 
+        if (serviceLoaderCall) {
+            bundles = activator.filterCompatibleProviderBundles(
+                    consumerBundle, clsArg, bundles);
+        }
+
+        if (serviceLoaderCall && permissionAware
+                && activator.isStandardConsumer(consumerBundle)
+                && !bundles.isEmpty()) {
+            return new ProviderAdvertisementClassLoader(
+                    activator.findProviderAdvertisements(requestedClass, bundles),
+                    requestedClass, consumerBundle, activator, session);
+        }
+
+        if (!isSessionActive(activator, session)) {
+            return null;
+        }
+
         switch (bundles.size()) {
         case 0:
             return null;
         case 1:
             Bundle bundle = bundles.iterator().next();
-            return getBundleClassLoader(bundle);
+            return serviceLoaderCall && permissionAware
+                    ? getProviderClassLoader(bundle, requestedClass, activator, session)
+                    : getBundleClassLoader(bundle, activator);
         default:
             List<ClassLoader> loaders = new ArrayList<ClassLoader>();
             for (Bundle b : bundles) {
-                loaders.add(getBundleClassLoader(b));
+                loaders.add(serviceLoaderCall && permissionAware
+                        ? getProviderClassLoader(b, requestedClass, activator, session)
+                        : getBundleClassLoader(b, activator));
             }
             return new MultiDelegationClassloader(loaders.toArray(new ClassLoader[loaders.size()]));
         }
     }
 
-    private static ClassLoader getBundleClassLoader(final Bundle b) {
+    private static ClassLoader getBundleClassLoader(final Bundle b,
+            final BaseActivator activator) {
         return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
             @Override
             public ClassLoader run() {
-                return getBundleClassLoaderPrivileged(b);
+                return getBundleClassLoaderPrivileged(b, activator);
             }
         });
     }
 
-    private static ClassLoader getBundleClassLoaderPrivileged(Bundle b) {
+    private static ClassLoader getProviderClassLoader(Bundle providerBundle,
+            String serviceType, BaseActivator activator, Object session) {
+        return new ProviderBundleClassLoader(providerBundle,
+                getBundleClassLoader(providerBundle, activator), serviceType,
+                activator, session);
+    }
+
+    private static ClassLoader getBundleClassLoaderPrivileged(Bundle b,
+            BaseActivator activator) {
         // In 4.3 this can be done much easier by using the BundleWiring, but we want this code to
         // be 4.2 compliant.
         // Here we're just finding any class in the bundle, load that and then use its classloader.
@@ -283,7 +415,7 @@ public class Util {
 
                 URL url = b.getResource(entry);
                 if (url != null) {
-                    ClassLoader cl = getClassLoaderViaBundleClassPath(b, url);
+                    ClassLoader cl = getClassLoaderViaBundleClassPath(b, url, activator);
                     if (cl != null)
                         return cl;
                 }
@@ -313,21 +445,18 @@ public class Util {
         }
     }
 
-    private static BundleReference getBundleReference(ClassLoader bundleLoader) {
-        if (BaseActivator.activator == null) {
-            // The system is not yet initialized. We can't do anything.
-            return null;
-        }
-
+    private static BundleReference getBundleReference(ClassLoader bundleLoader,
+            BaseActivator activator) {
         if (!(bundleLoader instanceof BundleReference)) {
-            BaseActivator.activator.log(Level.FINE, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
+            activator.log(Level.FINE, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
             return null;
         }
 
         return (BundleReference) bundleLoader;
     }
 
-    private static ClassLoader getClassLoaderViaBundleClassPath(Bundle b, URL url) {
+    private static ClassLoader getClassLoaderViaBundleClassPath(Bundle b, URL url,
+            BaseActivator activator) {
         try {
             JarInputStream jis = null;
             try {
@@ -347,7 +476,7 @@ public class Util {
                     jis.close();
             }
         } catch (IOException e) {
-            BaseActivator.activator.log(Level.FINE, "Problem loading class from embedded jar file: " + url +
+            activator.log(Level.FINE, "Problem loading class from embedded jar file: " + url +
                 " in bundle " + b.getSymbolicName(), e);
         }
         return null;
@@ -370,9 +499,36 @@ public class Util {
 
     private static class WrapperCL extends ClassLoader {
         private final ClassLoader bundleClassloader;
-        public WrapperCL(ClassLoader specifiedClassLoader, ClassLoader bundleClassloader) {
+        private final BaseActivator activator;
+        private final Object session;
+
+        WrapperCL(ClassLoader specifiedClassLoader, ClassLoader bundleClassloader,
+                BaseActivator activator, Object session) {
             super(specifiedClassLoader);
             this.bundleClassloader = bundleClassloader;
+            this.activator = activator;
+            this.session = session;
+        }
+
+        @Override
+        protected synchronized Class<?> loadClass(String name, boolean resolve)
+                throws ClassNotFoundException {
+            if (!isSessionActive(activator, session)) {
+                throw new ClassNotFoundException(name);
+            }
+            return super.loadClass(name, resolve);
+        }
+
+        @Override
+        public URL getResource(String name) {
+            return isSessionActive(activator, session) ? super.getResource(name) : null;
+        }
+
+        @Override
+        public Enumeration<URL> getResources(String name) throws IOException {
+            return isSessionActive(activator, session)
+                    ? super.getResources(name)
+                    : java.util.Collections.<URL>emptyEnumeration();
         }
 
         @Override
@@ -389,5 +545,314 @@ public class Util {
         protected Enumeration<URL> findResources(String name) throws IOException {
             return bundleClassloader.getResources(name);
         }
+    }
+
+    private static class ProviderViewClassLoader extends ClassLoader {
+        private final ClassLoader providerClassLoader;
+        private final Bundle consumerBundle;
+        private final String serviceType;
+        private final String providerConfiguration;
+        private final BaseActivator activator;
+        private final Object session;
+
+        ProviderViewClassLoader(ClassLoader parent, ClassLoader providerClassLoader,
+                Bundle consumerBundle, String serviceType, BaseActivator activator,
+                Object session) {
+            super(parent);
+            this.providerClassLoader = providerClassLoader;
+            this.consumerBundle = consumerBundle;
+            this.serviceType = serviceType;
+            this.activator = activator;
+            this.session = session;
+            providerConfiguration = "META-INF/services/" + serviceType;
+        }
+
+        @Override
+        public URL getResource(String name) {
+            if (!isSessionActive(activator, session)) {
+                return null;
+            }
+            if (providerConfiguration.equals(name)) {
+                return !hasGetPermission() || providerClassLoader == null
+                        ? null : providerClassLoader.getResource(name);
+            }
+            return super.getResource(name);
+        }
+
+        @Override
+        public Enumeration<URL> getResources(String name) throws IOException {
+            if (!isSessionActive(activator, session)) {
+                return java.util.Collections.emptyEnumeration();
+            }
+            if (providerConfiguration.equals(name)) {
+                return !hasGetPermission() || providerClassLoader == null
+                        ? java.util.Collections.<URL>emptyEnumeration()
+                        : providerClassLoader.getResources(name);
+            }
+            return super.getResources(name);
+        }
+
+        @Override
+        protected synchronized Class<?> loadClass(String name, boolean resolve)
+                throws ClassNotFoundException {
+            if (!isSessionActive(activator, session)
+                    || !hasGetPermission() || providerClassLoader == null) {
+                throw new ClassNotFoundException(name);
+            }
+            Class<?> cls = providerClassLoader.loadClass(name);
+            if (resolve) {
+                resolveClass(cls);
+            }
+            return cls;
+        }
+
+        @Override
+        protected URL findResource(String name) {
+            return !isSessionActive(activator, session)
+                    || !hasGetPermission() || providerClassLoader == null
+                    ? null : providerClassLoader.getResource(name);
+        }
+
+        @Override
+        protected Enumeration<URL> findResources(String name) throws IOException {
+            return !isSessionActive(activator, session)
+                    || !hasGetPermission() || providerClassLoader == null
+                    ? java.util.Collections.<URL>emptyEnumeration()
+                    : providerClassLoader.getResources(name);
+        }
+
+        private boolean hasGetPermission() {
+            boolean permitted = consumerBundle.hasPermission(
+                    new ServicePermission(serviceType, ServicePermission.GET));
+            if (!permitted) {
+                activator.log(Level.FINE, "Bundle " + consumerBundle
+                        + " does not have permission to obtain services of type: "
+                        + serviceType);
+            }
+            return permitted;
+        }
+    }
+
+    private static class ProviderAdvertisementClassLoader extends ClassLoader {
+        private final String serviceType;
+        private final String providerConfiguration;
+        private final Bundle consumerBundle;
+        private final BaseActivator activator;
+        private final Object session;
+        private final Map<String, List<BaseActivator.ProviderAdvertisement>>
+                advertisersByImplementation =
+                        new LinkedHashMap<String, List<BaseActivator.ProviderAdvertisement>>();
+
+        ProviderAdvertisementClassLoader(
+                List<BaseActivator.ProviderAdvertisement> advertisements,
+                String serviceType, Bundle consumerBundle,
+                BaseActivator activator, Object session) {
+            super(null);
+            this.serviceType = serviceType;
+            this.consumerBundle = consumerBundle;
+            this.activator = activator;
+            this.session = session;
+            providerConfiguration = "META-INF/services/" + serviceType;
+            for (BaseActivator.ProviderAdvertisement advertisement : advertisements) {
+                for (String implementation : advertisement.getImplementationNames()) {
+                    advertisersByImplementation.computeIfAbsent(implementation,
+                            key -> new ArrayList<BaseActivator.ProviderAdvertisement>())
+                            .add(advertisement);
+                }
+            }
+        }
+
+        @Override
+        public URL getResource(String name) {
+            if (!isSessionActive(activator, session)
+                    || !providerConfiguration.equals(name)) {
+                return null;
+            }
+            return createProviderConfiguration();
+        }
+
+        @Override
+        public Enumeration<URL> getResources(String name) throws IOException {
+            URL configuration = getResource(name);
+            return configuration == null
+                    ? java.util.Collections.<URL>emptyEnumeration()
+                    : java.util.Collections.enumeration(
+                            java.util.Collections.singleton(configuration));
+        }
+
+        @Override
+        public Class<?> loadClass(String name) throws ClassNotFoundException {
+            if (!isSessionActive(activator, session)) {
+                throw new ClassNotFoundException(name);
+            }
+            List<BaseActivator.ProviderAdvertisement> advertisements =
+                    advertisersByImplementation.get(name);
+            if (advertisements == null) {
+                throw new ClassNotFoundException(name);
+            }
+
+            ClassNotFoundException last = null;
+            for (BaseActivator.ProviderAdvertisement advertisement : advertisements) {
+                if (!isProviderAvailable(advertisement, serviceType,
+                        activator, session)) {
+                    continue;
+                }
+                try {
+                    Class<?> providerClass = advertisement.getBundle().loadClass(name);
+                    if (!isProviderAvailable(advertisement, serviceType,
+                            activator, session)) {
+                        throw new ClassNotFoundException(name);
+                    }
+                    activator.recordProviderUse(consumerBundle,
+                            advertisement.getBundle(), session);
+                    return providerClass;
+                }
+                catch (ClassNotFoundException e) {
+                    last = e;
+                }
+            }
+            throw last == null ? new ClassNotFoundException(name) : last;
+        }
+
+        private URL createProviderConfiguration() {
+            if (!isSessionActive(activator, session)) {
+                return null;
+            }
+            Set<String> implementations = new LinkedHashSet<String>();
+            for (Map.Entry<String, List<BaseActivator.ProviderAdvertisement>> entry
+                    : advertisersByImplementation.entrySet()) {
+                for (BaseActivator.ProviderAdvertisement advertisement : entry.getValue()) {
+                    if (isProviderAvailable(advertisement, serviceType,
+                            activator, session)) {
+                        implementations.add(entry.getKey());
+                        break;
+                    }
+                }
+            }
+            if (implementations.isEmpty()) {
+                return null;
+            }
+
+            StringBuilder contents = new StringBuilder();
+            for (String implementation : implementations) {
+                contents.append(implementation).append('\n');
+            }
+            final byte[] bytes = contents.toString().getBytes(StandardCharsets.UTF_8);
+            try {
+                return new URL(null,
+                        "spifly:" + serviceType + "/"
+                                + Integer.toHexString(System.identityHashCode(this)),
+                        new URLStreamHandler() {
+                            @Override
+                            protected URLConnection openConnection(URL url) {
+                                return new URLConnection(url) {
+                                    @Override
+                                    public void connect() {
+                                    }
+
+                                    @Override
+                                    public InputStream getInputStream() {
+                                        return new ByteArrayInputStream(bytes);
+                                    }
+                                };
+                            }
+                        });
+            }
+            catch (java.net.MalformedURLException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+    }
+
+    private static class ProviderBundleClassLoader extends ClassLoader {
+        private final Bundle providerBundle;
+        private final ClassLoader delegate;
+        private final String serviceType;
+        private final BaseActivator activator;
+        private final Object session;
+
+        ProviderBundleClassLoader(Bundle providerBundle, ClassLoader delegate,
+                String serviceType, BaseActivator activator, Object session) {
+            super(null);
+            this.providerBundle = providerBundle;
+            this.delegate = delegate;
+            this.serviceType = serviceType;
+            this.activator = activator;
+            this.session = session;
+        }
+
+        @Override
+        public Class<?> loadClass(String name) throws ClassNotFoundException {
+            if (!hasRegisterPermission()) {
+                throw new ClassNotFoundException(name);
+            }
+            return delegate.loadClass(name);
+        }
+
+        @Override
+        public URL getResource(String name) {
+            return hasRegisterPermission() ? delegate.getResource(name) : null;
+        }
+
+        @Override
+        public Enumeration<URL> getResources(String name) throws IOException {
+            return hasRegisterPermission()
+                    ? delegate.getResources(name)
+                    : java.util.Collections.<URL>emptyEnumeration();
+        }
+
+        private boolean hasRegisterPermission() {
+            if (!isSessionActive(activator, session)) {
+                return false;
+            }
+            boolean permitted = providerBundle.hasPermission(
+                    new ServicePermission(serviceType, ServicePermission.REGISTER));
+            if (!permitted) {
+                activator.log(Level.FINE, "Bundle " + providerBundle
+                        + " does not have permission to provide services of type: "
+                        + serviceType);
+            }
+            return permitted;
+        }
+    }
+
+    private static boolean isProviderAvailable(
+            BaseActivator.ProviderAdvertisement advertisement, String serviceType,
+            BaseActivator activator, Object session) {
+        return isProviderAvailable(advertisement.getBundle(),
+                advertisement.getRevision(), advertisement.getWiring(), serviceType,
+                activator, session);
+    }
+
+    private static boolean isProviderAvailable(Bundle providerBundle,
+            BundleRevision providerRevision, BundleWiring providerWiring,
+            String serviceType, BaseActivator activator, Object session) {
+        if (!isSessionActive(activator, session)) {
+            return false;
+        }
+        if (providerBundle.getState() != Bundle.ACTIVE) {
+            activator.log(Level.FINE, "Bundle " + providerBundle
+                    + " is not active and cannot provide services of type: "
+                    + serviceType);
+            return false;
+        }
+        if (!providerBundle.hasPermission(
+                new ServicePermission(serviceType, ServicePermission.REGISTER))) {
+            activator.log(Level.FINE, "Bundle " + providerBundle
+                    + " does not have permission to provide services of type: "
+                    + serviceType);
+            return false;
+        }
+        if (providerRevision != null) {
+            BundleWiring wiring = WiringUtils.getWiring(providerBundle);
+            if (wiring == null || wiring != providerWiring
+                    || wiring.getRevision() != providerRevision) {
+                activator.log(Level.FINE, "Bundle " + providerBundle
+                        + " no longer has the revision that advertised service type: "
+                        + serviceType);
+                return false;
+            }
+        }
+        return true;
     }
 }

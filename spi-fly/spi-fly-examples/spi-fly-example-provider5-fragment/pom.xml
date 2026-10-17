@@ -46,6 +46,11 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.aries.spifly.examples</groupId>
+            <artifactId>org.apache.aries.spifly.examples.provider1.jar</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <properties>
@@ -69,8 +74,16 @@
                         <Private-Package>
                             org.apache.aries.spifly.mysvc.impl5frag
                         </Private-Package>
+                        <Embed-Dependency>*;scope=compile;inline=false</Embed-Dependency>
                         <Require-Capability>osgi.extender; filter:="(osgi.extender=osgi.serviceloader.registrar)"</Require-Capability>
-                        <Provide-Capability>osgi.serviceloader; osgi.serviceloader=org.apache.aries.spifly.mysvc.SPIProvider2</Provide-Capability>
+                        <Provide-Capability>
+                            osgi.serviceloader;
+                                osgi.serviceloader=org.apache.aries.spifly.mysvc.SPIProvider2,
+                            osgi.serviceloader;
+                                osgi.serviceloader=org.apache.aries.spifly.mysvc.SPIProvider;
+                                register:="org.apache.aries.spifly.mysvc.impl.SPIProviderImpl";
+                                decorator=fragment-embedded
+                        </Provide-Capability>
                     </instructions>
                 </configuration>
             </plugin>
