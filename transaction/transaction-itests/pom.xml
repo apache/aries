@@ -48,9 +48,10 @@
         <javax.el-api.version>3.0.0</javax.el-api.version>
         <javax.interceptor-api.version>1.2.2</javax.interceptor-api.version>
         <javax.transaction-api.version>1.2</javax.transaction-api.version>
+        <objenesis.version>3.6</objenesis.version>
         <org.apache.aries.blueprint.api.version>1.0.0</org.apache.aries.blueprint.api.version>
         <org.apache.aries.blueprint.core.version>1.4.4</org.apache.aries.blueprint.core.version>
-        <org.apache.aries.proxy.impl.version>1.0.6</org.apache.aries.proxy.impl.version>
+        <org.apache.aries.proxy.version>2.0.0</org.apache.aries.proxy.version>
         <org.apache.aries.testsupport.unit.version>2.0.0</org.apache.aries.testsupport.unit.version>
         <org.apache.aries.transaction.blueprint.version>2.3.2-SNAPSHOT</org.apache.aries.transaction.blueprint.version>
         <org.apache.aries.transaction.jdbc.version>2.1.4-SNAPSHOT</org.apache.aries.transaction.jdbc.version>
@@ -84,9 +85,15 @@
         </dependency>
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
-            <artifactId>org.apache.aries.proxy.impl</artifactId>
+            <artifactId>org.apache.aries.proxy</artifactId>
+            <version>${org.apache.aries.proxy.version}</version>
             <scope>test</scope>
-            <version>${org.apache.aries.proxy.impl.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.objenesis</groupId>
+            <artifactId>objenesis</artifactId>
+            <version>${objenesis.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
