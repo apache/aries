@@ -99,13 +99,13 @@
         <blueprint.parser.version>1.6.2-SNAPSHOT</blueprint.parser.version>
         <easymock.version>5.7.0</easymock.version>
         <maven-release-plugin.version>3.3.1</maven-release-plugin.version>
+        <org.apache.aries.quiesce.api.version>1.0.1</org.apache.aries.quiesce.api.version>
         <org.apache.aries.versioning.plugin.version>0.3.1</org.apache.aries.versioning.plugin.version>
         <org.apache.felix.utils.version>1.11.10</org.apache.felix.utils.version>
         <osgi.cmpn.version>4.3.1</osgi.cmpn.version>
         <osgi.core.version>4.3.1</osgi.core.version>
-        <proxy.api.version>1.1.1</proxy.api.version>
-        <proxy.impl.version>1.1.9</proxy.impl.version>
-        <quiesce.api.version>1.0.0</quiesce.api.version>
+        <org.apache.aries.proxy.api.version>1.1.2</org.apache.aries.proxy.api.version>
+        <org.apache.aries.proxy.version>2.0.0</org.apache.aries.proxy.version>
         <util.version>2.0.0</util.version>
         <slf4j.version>2.0.20</slf4j.version>
     </properties>
@@ -185,7 +185,7 @@
         <dependency>
             <groupId>org.apache.aries.quiesce</groupId>
             <artifactId>org.apache.aries.quiesce.api</artifactId>
-            <version>${quiesce.api.version}</version>
+            <version>${org.apache.aries.quiesce.api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.easymock</groupId>
@@ -196,12 +196,12 @@
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
             <artifactId>org.apache.aries.proxy.api</artifactId>
-            <version>${proxy.api.version}</version>
+            <version>${org.apache.aries.proxy.api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
             <artifactId>org.apache.aries.proxy</artifactId>
-            <version>${proxy.impl.version}</version>
+            <version>${org.apache.aries.proxy.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
