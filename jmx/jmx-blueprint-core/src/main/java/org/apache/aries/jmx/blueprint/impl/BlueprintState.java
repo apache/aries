@@ -134,7 +134,7 @@ public class BlueprintState extends NotificationBroadcasterSupport implements Bl
                 LOGGER.warn("Task rejected for JMX Notification dispatch of event ["
                         + event + "] - Dispatcher may have been shutdown");
             } catch (Exception e) {
-                LOGGER.warn("Exception occured on JMX Notification dispatch for event [" + event + "]", e);
+                LOGGER.warn("Exception occurred on JMX Notification dispatch for event [" + event + "]", e);
             }
         }
     }
