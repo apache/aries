@@ -425,7 +425,7 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
                                     + event + "] - Dispatcher may have been shutdown");
                         } catch (Exception e) {
                             logger.log(LogService.LOG_WARNING,
-                                    "Exception occured on JMX Notification dispatch for event [" + event + "]", e);
+                                    "Exception occurred on JMX Notification dispatch for event [" + event + "]", e);
                         }
                     }
                 };

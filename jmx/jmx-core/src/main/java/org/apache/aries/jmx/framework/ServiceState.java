@@ -278,7 +278,7 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
                                     + serviceevent + "] - Dispatcher may have been shutdown");
                         } catch (Exception e) {
                             logger.log(LogService.LOG_WARNING,
-                                    "Exception occured on JMX Notification dispatch for event [" + serviceevent + "]",
+                                    "Exception occurred on JMX Notification dispatch for event [" + serviceevent + "]",
                                     e);
                         }
                     }

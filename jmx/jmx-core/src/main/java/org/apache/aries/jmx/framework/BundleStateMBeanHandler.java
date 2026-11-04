@@ -104,7 +104,7 @@ public class BundleStateMBeanHandler implements MBeanHandler {
             try {
                 bundleContext.ungetService(packageAdminRef);
             } catch (RuntimeException e) {
-                logger.log(LogService.LOG_WARNING, "Exception occured during cleanup", e);
+                logger.log(LogService.LOG_WARNING, "Exception occurred during cleanup", e);
             }
             packageAdminRef = null;
         }
@@ -112,7 +112,7 @@ public class BundleStateMBeanHandler implements MBeanHandler {
             try {
                 bundleContext.ungetService(startLevelRef);
             } catch (RuntimeException e) {
-                logger.log(LogService.LOG_WARNING, "Exception occured during cleanup", e);
+                logger.log(LogService.LOG_WARNING, "Exception occurred during cleanup", e);
             }
             startLevelRef = null;
         }
