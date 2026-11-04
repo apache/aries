@@ -40,7 +40,7 @@
         </TR>
     <TR>
             <TD bgcolor="#e7e4e7" rowspan="4" width="3"></TD>
-            <TD><B><FONT color="#000000">An Error has occured during AriesTrader processing</FONT><FONT size="-2">.</FONT></B><BR>
+            <TD><B><FONT color="#000000">An Error has occurred during AriesTrader processing</FONT><FONT size="-2">.</FONT></B><BR>
             The stack trace detailing the error follows.
             <p><b>Please consult the application server error logs for further details.</b></p>
             </TD>
