@@ -271,19 +271,38 @@ public class Activator implements BundleActivator {
         return "";
     }
 
+    private static class Swapped<T> {
+        boolean swapped;
+        T value;
+
+        Swapped(boolean swapped, T value) {
+            this.swapped = swapped;
+            this.value = value;
+        }
+    }
     /*
      * There are no public API to reset the InitialContextFactoryBuilder or
      * ObjectFactoryBuilder on the NamingManager so try to use reflection.
      */
     private static <T> T swapStaticField(Class<T> expectedType, Object value) throws IllegalStateException {
         try {
-            for (Field field : NamingManager.class.getDeclaredFields()) {
-                if (expectedType.equals(field.getType())) {
-                    field.setAccessible(true);
-                    T original = expectedType.cast(field.get(null));
-                    field.set(null, value);
-                    return original;
+            Swapped<T> swappedInNamingManager = swapStaticFieldInClass(expectedType, value, NamingManager.class);
+            if (swappedInNamingManager.swapped){
+                return swappedInNamingManager.value;
+            }
+            // NamingManagerHelper is not available on older Java 8 versions - available e.g. in Temurin 8u512 after JDK-8290368
+            try {
+                Class<?> helperClass = Class.forName(
+                        "com.sun.naming.internal.NamingManagerHelper",
+                        false,
+                        NamingManager.class.getClassLoader());
+                Swapped<T> swappedInHelper = swapStaticFieldInClass(expectedType, value, helperClass);
+                if (swappedInHelper.swapped){
+                    return swappedInHelper.value;
                 }
+            } catch (ClassNotFoundException e) {
+                throw new IllegalStateException(
+                        "Error setting field: no field found for type " + expectedType);
             }
         } catch (Throwable t) {
             // Ignore
@@ -291,6 +310,18 @@ public class Activator implements BundleActivator {
             throw new IllegalStateException(t);
         }
         throw new IllegalStateException("Error setting field: no field found for type " + expectedType);
+    }
+
+    private static <T> Swapped<T> swapStaticFieldInClass(Class<T> expectedType, Object value, Class<?> targetClass) throws IllegalAccessException {
+        for (Field field : targetClass.getDeclaredFields()) {
+            if (expectedType.equals(field.getType())) {
+                field.setAccessible(true);
+                T original = expectedType.cast(field.get(null));
+                field.set(null, value);
+                return new Swapped<>(true, original);
+            }
+        }
+        return new Swapped<>(false, null);
     }
 
     private static List<String> getInitialContextFactoryInterfaces(ServiceReference<InitialContextFactory> ref) {
