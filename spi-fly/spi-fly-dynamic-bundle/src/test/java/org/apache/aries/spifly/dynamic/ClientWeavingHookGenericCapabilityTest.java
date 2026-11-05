@@ -199,7 +199,7 @@ public class ClientWeavingHookGenericCapabilityTest {
         fragmentConsumerHeaders.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.CLIENT_REQUIREMENT);
 
         Bundle fragment = EasyMock.createMock(Bundle.class);
-        EasyMock.expect(fragment.getHeaders()).andReturn(fragmentConsumerHeaders).anyTimes();
+        EasyMock.expect(fragment.getHeaders("")).andReturn(fragmentConsumerHeaders).anyTimes();
         EasyMock.replay(fragment);
         BundleRevision frev = EasyMock.createMock(BundleRevision.class);
         EasyMock.expect(frev.getBundle()).andReturn(fragment).anyTimes();
@@ -838,7 +838,7 @@ public class ClientWeavingHookGenericCapabilityTest {
         Bundle consumerBundle = EasyMock.createMock(Bundle.class);
         EasyMock.expect(consumerBundle.getSymbolicName()).andReturn("testConsumer").anyTimes();
         EasyMock.expect(consumerBundle.getVersion()).andReturn(new Version(1, 2, 3)).anyTimes();
-        EasyMock.expect(consumerBundle.getHeaders()).andReturn(headers).anyTimes();
+        EasyMock.expect(consumerBundle.getHeaders("")).andReturn(headers).anyTimes();
         EasyMock.expect(consumerBundle.getBundleContext()).andReturn(bc).anyTimes();
         EasyMock.expect(consumerBundle.getBundleId()).andReturn(Long.MAX_VALUE).anyTimes();
         EasyMock.expect(consumerBundle.adapt(BundleRevision.class)).andReturn(rev).anyTimes();
