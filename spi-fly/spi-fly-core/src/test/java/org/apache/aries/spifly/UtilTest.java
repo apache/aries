@@ -83,7 +83,7 @@ public class UtilTest {
         EasyMock.expect(providerBundle.getEntryPaths((String) EasyMock.anyObject())).andReturn(null).anyTimes();
         Dictionary<String, String> providerHeaders = new Hashtable<String, String>();
         providerHeaders.put(Constants.BUNDLE_CLASSPATH, ".,embedded3.jar");
-        EasyMock.expect(providerBundle.getHeaders()).andReturn(providerHeaders).anyTimes();
+        EasyMock.expect(providerBundle.getHeaders("")).andReturn(providerHeaders).anyTimes();
         EasyMock.expect(providerBundle.getResource("embedded3.jar")).andReturn(url).anyTimes();
         providerBundle.loadClass((String) EasyMock.anyObject());
         EasyMock.expectLastCall().andAnswer(new IAnswer<Class<?>>() {
@@ -117,7 +117,7 @@ public class UtilTest {
         EasyMock.expect(providerBundle.getEntryPaths((String) EasyMock.anyObject())).andReturn(null).anyTimes();
         Dictionary<String, String> providerHeaders = new Hashtable<String, String>();
         providerHeaders.put(Constants.BUNDLE_CLASSPATH, ".,embedded3.jar");
-        EasyMock.expect(providerBundle.getHeaders()).andReturn(providerHeaders).anyTimes();
+        EasyMock.expect(providerBundle.getHeaders("")).andReturn(providerHeaders).anyTimes();
         EasyMock.expect(providerBundle.getResource("embedded3.jar")).andReturn(url).anyTimes();
         providerBundle.loadClass((String) EasyMock.anyObject());
         EasyMock.expectLastCall().andAnswer(new IAnswer<Class<?>>() {

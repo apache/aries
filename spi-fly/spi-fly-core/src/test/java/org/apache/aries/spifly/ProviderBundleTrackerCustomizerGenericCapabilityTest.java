@@ -554,7 +554,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
                 SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "; " +
                 SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "=org.apache.aries.mytest.MySPI");
         headers.put(Constants.BUNDLE_CLASSPATH, ".,non-jar.jar,embedded.jar,embedded2.jar");
-        EasyMock.expect(implBundle.getHeaders()).andReturn(headers).anyTimes();
+        EasyMock.expect(implBundle.getHeaders("")).andReturn(headers).anyTimes();
 
         URL embeddedJar = getClass().getResource("/embedded.jar");
         assertNotNull("precondition", embeddedJar);
@@ -616,7 +616,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
         Bundle implBundle = EasyMock.createNiceMock(Bundle.class);
         EasyMock.expect(implBundle.getBundleContext()).andReturn(implBC).anyTimes();
-        EasyMock.expect(implBundle.getHeaders()).andReturn(headers).anyTimes();
+        EasyMock.expect(implBundle.getHeaders("")).andReturn(headers).anyTimes();
         EasyMock.expect(implBundle.getSymbolicName()).andReturn("bsn").anyTimes();
 
         // List the resources found at META-INF/services in the test bundle
@@ -681,7 +681,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
     private Bundle mockSPIBundle4(BundleContext implBC, Dictionary<String, String> headers, BundleRevision rev) throws ClassNotFoundException {
         Bundle implBundle = EasyMock.createNiceMock(Bundle.class);
         EasyMock.expect(implBundle.getBundleContext()).andReturn(implBC).anyTimes();
-        EasyMock.expect(implBundle.getHeaders()).andReturn(headers).anyTimes();
+        EasyMock.expect(implBundle.getHeaders("")).andReturn(headers).anyTimes();
         if (rev != null)
             EasyMock.expect(implBundle.adapt(BundleRevision.class)).andReturn(rev).anyTimes();
 
@@ -711,7 +711,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
     private Bundle mockFragment(Dictionary<String, String> headers) {
         Bundle fragment = EasyMock.createMock(Bundle.class);
-        EasyMock.expect(fragment.getHeaders()).andReturn(headers).anyTimes();
+        EasyMock.expect(fragment.getHeaders("")).andReturn(headers).anyTimes();
         EasyMock.replay(fragment);
         return fragment;
     }

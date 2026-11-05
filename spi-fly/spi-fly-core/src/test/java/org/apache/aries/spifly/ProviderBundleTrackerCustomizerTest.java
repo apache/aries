@@ -120,7 +120,7 @@ public class ProviderBundleTrackerCustomizerTest {
         Dictionary<String, String> headers = new Hashtable<String, String>();
         headers.put(SpiFlyConstants.SPI_PROVIDER_HEADER, "*");
         headers.put(Constants.BUNDLE_CLASSPATH, ".,non-jar.jar,embedded.jar,embedded2.jar");
-        EasyMock.expect(implBundle.getHeaders()).andReturn(headers).anyTimes();
+        EasyMock.expect(implBundle.getHeaders("")).andReturn(headers).anyTimes();
 
         URL embeddedJar = getClass().getResource("/embedded.jar");
         assertNotNull("precondition", embeddedJar);
@@ -189,7 +189,7 @@ public class ProviderBundleTrackerCustomizerTest {
         Dictionary<String, String> headers = new Hashtable<String, String>();
         if (spiProviderHeader != null)
             headers.put(SpiFlyConstants.SPI_PROVIDER_HEADER, spiProviderHeader);
-        EasyMock.expect(implBundle.getHeaders()).andReturn(headers).anyTimes();
+        EasyMock.expect(implBundle.getHeaders("")).andReturn(headers).anyTimes();
 
         // List the resources found at META-INF/services in the test bundle
         URL dir = getClass().getResource("impl1/META-INF/services");
@@ -219,7 +219,7 @@ public class ProviderBundleTrackerCustomizerTest {
             "osgi.serviceloader;osgi.serviceloader='org.apache.aries.mytest.MySPI2';register:='org.apache.aries.spifly.impl4.MySPIImpl4b';foo='bbb'," +
             "osgi.serviceloader;osgi.serviceloader='org.apache.aries.mytest.MySPI2';register:='org.apache.aries.spifly.impl4.MySPIImpl4c';foo='ccc'"
         );
-        EasyMock.expect(implBundle.getHeaders()).andReturn(headers).anyTimes();
+        EasyMock.expect(implBundle.getHeaders("")).andReturn(headers).anyTimes();
 
         // List the resources found at META-INF/services in the test bundle
         URL dir = getClass().getResource("impl4/META-INF/services");

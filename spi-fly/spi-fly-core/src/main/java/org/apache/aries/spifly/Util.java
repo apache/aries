@@ -274,7 +274,7 @@ public class Util {
         }
 
         // if we can't find any classes in the bundle directly, try the Bundle-ClassPath
-        Object bcp = b.getHeaders().get(Constants.BUNDLE_CLASSPATH);
+        Object bcp = b.getHeaders("").get(Constants.BUNDLE_CLASSPATH);
         if (bcp instanceof String) {
             for (String entry : ((String) bcp).split(",")) {
                 entry = entry.trim();
