@@ -19,6 +19,7 @@
 package org.apache.aries.blueprint.authorization.impl;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessControlContext;
 import java.security.AccessControlException;
@@ -38,6 +39,29 @@ import org.slf4j.LoggerFactory;
 
 public class AuthorizationInterceptor implements Interceptor {
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthorizationInterceptor.class);
+
+    // Subject.current() is available since Java 18, and Subject.getSubject() is not supported anymore since Java 23
+    private static final Method SUBJECT_CURRENT = findSubjectCurrent();
+
+    private static Method findSubjectCurrent() {
+        try {
+            return Subject.class.getMethod("current");
+        } catch (NoSuchMethodException e) {
+            return null;
+        }
+    }
+
+    private static Subject getCurrentSubject() {
+        if (SUBJECT_CURRENT != null) {
+            try {
+                return (Subject) SUBJECT_CURRENT.invoke(null);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new IllegalStateException("Unable to get the current JAAS subject", e);
+            }
+        }
+        AccessControlContext acc = AccessController.getContext();
+        return Subject.getSubject(acc);
+    }
     private Class<?> beanClass;
 
     public AuthorizationInterceptor(Class<?> beanClass) {
@@ -65,8 +89,7 @@ public class AuthorizationInterceptor implements Interceptor {
             rolesAr = ((RolesAllowed) ann).value();
         } 
         Set<String> roles = new HashSet<String>(Arrays.asList(rolesAr));
-        AccessControlContext acc = AccessController.getContext();
-        Subject subject = Subject.getSubject(acc);
+        Subject subject = getCurrentSubject();
         if (subject == null) {
             throw new AccessControlException("Method call " + m.getDeclaringClass() + "." + m.getName() + " denied. No JAAS login present");
         }

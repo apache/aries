@@ -474,6 +474,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
             final List<StreamSource> sources = new ArrayList<StreamSource>();
             final Map<String, URL> loaded = new HashMap<String, URL>();
             final Map<String, String> namespaces = new HashMap<String, String>();
+            final Map<String, URL> urls = new HashMap<String, URL>();
             @Override
             public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
                 // Compute id
@@ -514,15 +515,9 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                 //---------------
                 // For relative uris, don't use the namespace handlers, but simply resolve the uri
                 // and use that one directly to load the resource.
-                String resolved = resolveIfRelative(systemId, baseURI);
-                if (resolved != null) {
-                    URL url;
-                    try {
-                        url = new URL(resolved);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    return createLSInput(url, id, namespaceURI);
+                URL resolvedUrl = resolveIfRelative(systemId, baseURI);
+                if (resolvedUrl != null) {
+                    return createLSInput(resolvedUrl, id, namespaceURI);
                 }
                 // Only support xml schemas from now on
                 if (namespaceURI == null || !W3C_XML_SCHEMA_NS_URI.equals(type)) {
@@ -576,6 +571,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                 sources.add(ss);
                 loaded.put(id, resource);
                 namespaces.put(url, namespace);
+                urls.put(url, resource);
                 return ss;
             }
 
@@ -593,20 +589,26 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
             private boolean isCorrectUrl(URL url) {
                 return url != null && !loaded.values().contains(url);
             }
-            private String resolveIfRelative(String systemId, String baseURI) {
+            private URL resolveIfRelative(String systemId, String baseURI) {
                 if (baseURI != null && systemId != null) {
                     URI sId = URI.create(systemId);
                     if (!sId.isAbsolute()) {
-                        URI resolved = URI.create(baseURI).resolve(sId);
-                        if (resolved.isAbsolute()) {
-                            return resolved.toString();
-                        } else {
-                            try {
-                                return new URL(new URL(baseURI), systemId).toString();
-                            } catch (MalformedURLException e) {
-                                LOGGER.warn("Can't resolve " + systemId + " against " + baseURI);
-                                return null;
+                        try {
+                            URL base = urls.get(baseURI);
+                            if (base != null) {
+                                // Resolve against the URL object that was handed out in the first place: creating
+                                // it again from its string form may pick the stream handler of another framework
+                                // instance running in the same JVM, which can't find the resource
+                                return new URL(base, systemId);
                             }
+                            URI resolved = URI.create(baseURI).resolve(sId);
+                            if (resolved.isAbsolute()) {
+                                return new URL(resolved.toString());
+                            }
+                            return new URL(new URL(baseURI), systemId);
+                        } catch (MalformedURLException e) {
+                            LOGGER.warn("Can't resolve " + systemId + " against " + baseURI);
+                            return null;
                         }
                     }
                 }
