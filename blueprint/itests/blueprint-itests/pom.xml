@@ -56,6 +56,7 @@
         <blueprint.sample.version>1.0.1-SNAPSHOT</blueprint.sample.version>
         <commons-jexl.version>2.1.1</commons-jexl.version>
         <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
+        <javax.annotation-api.version>1.3.2</javax.annotation-api.version>
         <maven-surefire-plugin.version>3.6.1</maven-surefire-plugin.version>
         <objenesis.version>3.6</objenesis.version>
         <org.apache.aries.proxy.version>2.0.1-SNAPSHOT</org.apache.aries.proxy.version>
@@ -114,6 +115,11 @@
             <artifactId>objenesis</artifactId>
             <version>${objenesis.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>${javax.annotation-api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
