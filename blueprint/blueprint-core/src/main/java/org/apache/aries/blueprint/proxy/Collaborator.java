@@ -55,7 +55,7 @@ public class Collaborator implements InvocationListener, Serializable {
      *
      * @param o          : The Object being invoked
      * @param m          : method
-     * @param parameters : method paramters
+     * @param parameters : method parameters
      * @throws Throwable
      */
     public Object preInvoke(Object o, Method m, Object[] parameters)
