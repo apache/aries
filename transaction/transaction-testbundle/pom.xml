@@ -58,8 +58,8 @@
         <dependency>
             <groupId>org.apache.aries.transaction</groupId>
             <artifactId>org.apache.aries.transaction.blueprint</artifactId>
-            <scope>provided</scope>
             <version>${org.apache.aries.transaction.blueprint.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.transaction</groupId>
