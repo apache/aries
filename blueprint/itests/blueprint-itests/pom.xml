@@ -55,7 +55,6 @@
         <blueprint.spring.version>1.0.0-SNAPSHOT</blueprint.spring.version>
         <blueprint.sample.version>1.0.1-SNAPSHOT</blueprint.sample.version>
         <commons-jexl.version>2.1.1</commons-jexl.version>
-        <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
         <javax.annotation-api.version>1.3.2</javax.annotation-api.version>
         <maven-surefire-plugin.version>3.6.1</maven-surefire-plugin.version>
         <objenesis.version>3.6</objenesis.version>
@@ -375,16 +374,6 @@
             <plugin>
                 <groupId>org.apache.servicemix.tooling</groupId>
                 <artifactId>depends-maven-plugin</artifactId>
-                <!-- TODO ARIES-2165: remove configuration when the newest parent pom is used -->
-                <version>${depends-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>generate-depends-file</id>
-                        <goals>
-                            <goal>generate-depends-file</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

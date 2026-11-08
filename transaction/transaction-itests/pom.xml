@@ -41,7 +41,6 @@
 
     <properties>
         <javax.enterprise.cdi-api.version>2.0.SP1</javax.enterprise.cdi-api.version>
-        <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
         <geronimo-connector.version>3.1.5</geronimo-connector.version>
         <geronimo-j2ee-connector_1.6_spec.version>1.0</geronimo-j2ee-connector_1.6_spec.version>
         <geronimo-validation_1.0_spec.version>1.1</geronimo-validation_1.0_spec.version>
@@ -284,16 +283,6 @@
             <plugin>
                 <groupId>org.apache.servicemix.tooling</groupId>
                 <artifactId>depends-maven-plugin</artifactId>
-                <!-- TODO ARIES-2165: remove configuration when the newest parent pom is used -->
-                <version>${depends-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>generate-depends-file</id>
-                        <goals>
-                            <goal>generate-depends-file</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
