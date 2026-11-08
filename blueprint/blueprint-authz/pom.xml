@@ -42,9 +42,9 @@
         <aries.osgi.activator>org.apache.aries.blueprint.authorization.impl.Activator</aries.osgi.activator>
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
 
-        <blueprint.api.version>1.0.2-SNAPSHOT</blueprint.api.version>
         <blueprint.parser.version>1.6.2-SNAPSHOT</blueprint.parser.version>
         <javax.annotation-api.version>1.3.2</javax.annotation-api.version>
+        <org.osgi.service.blueprint.version>1.0.2</org.osgi.service.blueprint.version>
         <osgi.cmpn.version>4.3.1</osgi.cmpn.version>
         <osgi.core.version>4.3.1</osgi.core.version>
         <slf4j.version>2.0.20</slf4j.version>
@@ -69,9 +69,9 @@
             <version>${javax.annotation-api.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint.api</artifactId>
-            <version>${blueprint.api.version}</version>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.service.blueprint</artifactId>
+            <version>${org.osgi.service.blueprint.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

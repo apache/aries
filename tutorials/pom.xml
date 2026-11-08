@@ -48,7 +48,6 @@
         <jansi.version>2.4.3</jansi.version>
         <javax.inject.version>1</javax.inject.version>
         <jline.version>4.5.0</jline.version>
-        <org.apache.aries.blueprint.api.version>1.0.1</org.apache.aries.blueprint.api.version>
         <org.apache.aries.blueprint.core.version>1.10.3</org.apache.aries.blueprint.core.version>
         <org.apache.aries.proxy.version>2.0.0</org.apache.aries.proxy.version>
         <org.apache.aries.quiesce.api.version>1.0.1</org.apache.aries.quiesce.api.version>
@@ -60,6 +59,7 @@
         <org.apache.felix.gogo.runtime.version>1.2.0</org.apache.felix.gogo.runtime.version>
         <org.eclipse.equinox.console.version>1.4.1100</org.eclipse.equinox.console.version>
         <org.eclipse.osgi.version>3.23.100</org.eclipse.osgi.version>
+        <org.osgi.service.blueprint.version>1.0.2</org.osgi.service.blueprint.version>
         <org.osgi.version>3.0.0</org.osgi.version>
         <pax-logging.version>2.2.14</pax-logging.version>
     </properties>
@@ -123,9 +123,9 @@
                 <version>${org.apache.aries.blueprint.core.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.aries.blueprint</groupId>
-                <artifactId>org.apache.aries.blueprint.api</artifactId>
-                <version>${org.apache.aries.blueprint.api.version}</version>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.service.blueprint</artifactId>
+                <version>${org.osgi.service.blueprint.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries</groupId>

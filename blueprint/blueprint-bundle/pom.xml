@@ -105,21 +105,21 @@
         <lastReleaseVersion>1.1.0</lastReleaseVersion>
 
         <asm.version>9.11.1</asm.version>
-        <blueprint.api.version>1.0.2-SNAPSHOT</blueprint.api.version>
         <blueprint.cm.version>1.3.3-SNAPSHOT</blueprint.cm.version>
         <blueprint.core.version>1.10.4-SNAPSHOT</blueprint.core.version>
         <org.apache.aries.proxy.api.version>1.1.2</org.apache.aries.proxy.api.version>
         <org.apache.aries.proxy.version>2.0.0</org.apache.aries.proxy.version>
         <org.apache.aries.quiesce.api.version>1.0.1</org.apache.aries.quiesce.api.version>
+        <org.osgi.service.blueprint.version>1.0.2</org.osgi.service.blueprint.version>
         <osgi.cmpn.version>4.3.1</osgi.cmpn.version>
         <slf4j.version>2.0.20</slf4j.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint.api</artifactId>
-            <version>${blueprint.api.version}</version>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.service.blueprint</artifactId>
+            <version>${org.osgi.service.blueprint.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -207,14 +207,14 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
-                                    <include>org.apache.aries.blueprint:org.apache.aries.blueprint.api</include>
+                                    <include>org.osgi:org.osgi.service.blueprint</include>
                                     <include>org.apache.aries.blueprint:org.apache.aries.blueprint.core</include>
                                     <include>org.apache.aries.blueprint:org.apache.aries.blueprint.cm</include>
                                 </includes>
                             </artifactSet>
                             <filters>
                                 <filter>
-                                    <artifact>org.apache.aries.blueprint:org.apache.aries.blueprint.api</artifact>
+                                    <artifact>org.osgi:org.osgi.service.blueprint</artifact>
                                     <excludes>
                                         <exclude>org/**</exclude>
                                     </excludes>
@@ -248,6 +248,8 @@
                     <excludes>
                         <exclude>method org.apache.aries.blueprint.di.Repository getRepository() has been deleted</exclude>
                         <exclude>class org/apache/aries/blueprint/ext/PropertyPlaceholder was not abstract but is changed to be abstract</exclude>
+                        <exclude>In the package org.osgi.service.blueprint, The schema file has been updated: blueprint.xsd.</exclude>
+                        <exclude>In the package org.apache.aries.blueprint, The schema file has been updated: blueprint.xsd.</exclude>
                     </excludes>
                 </configuration>
             </plugin>
@@ -290,8 +292,8 @@
                                 <configuration>
                                     <artifactItems>
                                         <artifactItem>
-                                            <groupId>org.apache.aries.blueprint</groupId>
-                                            <artifactId>org.apache.aries.blueprint.api</artifactId>
+                                            <groupId>org.osgi</groupId>
+                                            <artifactId>org.osgi.service.blueprint</artifactId>
                                             <classifier>sources</classifier>
                                         </artifactItem>
                                         <artifactItem>
