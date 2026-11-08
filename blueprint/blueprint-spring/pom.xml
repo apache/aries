@@ -58,6 +58,7 @@
         <aries.osgi.activator>
             org.apache.aries.blueprint.spring.Activator
         </aries.osgi.activator>
+        <aries.skip.version.check>true</aries.skip.version.check>
         <!--
         <lastReleaseVersion>1.0.4</lastReleaseVersion>
         -->
@@ -126,26 +127,4 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.aries.versioning</groupId>
-                <artifactId>org.apache.aries.versioning.plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default-verify</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>version-check</goal>
-                        </goals>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
 </project>

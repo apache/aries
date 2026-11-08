@@ -48,6 +48,7 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <java.source.version>8</java.source.version>
+        <lastReleaseVersion>1.3.8</lastReleaseVersion>
 
         <asm.version>9.11.1</asm.version>
         <assertj.version>3.27.7</assertj.version>
@@ -68,7 +69,7 @@
         <maven-enforcer-plugin.version>3.7.0</maven-enforcer-plugin.version>
         <maven-surefire-plugin.version>3.6.1</maven-surefire-plugin.version>
         <mockito.core.version>4.11.0</mockito.core.version>
-        <org.apache.aries.versioning.plugin.version>0.3.1</org.apache.aries.versioning.plugin.version>
+        <org.apache.aries.versioning.plugin.version>0.4.0</org.apache.aries.versioning.plugin.version>
         <osgi.core.version>8.0.0</osgi.core.version>
         <osgi.test.version>1.3.0</osgi.test.version>
         <slf4j.version>2.0.20</slf4j.version>
@@ -113,6 +114,9 @@
                     <groupId>org.apache.aries.versioning</groupId>
                     <artifactId>org.apache.aries.versioning.plugin</artifactId>
                     <version>${org.apache.aries.versioning.plugin.version}</version>
+                    <configuration>
+                        <oldArtifact>${project.groupId}:${project.artifactId}:${lastReleaseVersion}</oldArtifact>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -256,6 +260,19 @@
                         <inputExclude>tck/apply-to-tck.sh</inputExclude>
                     </inputExcludes>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.aries.versioning</groupId>
+                <artifactId>org.apache.aries.versioning.plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-verify</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>version-check</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

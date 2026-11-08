@@ -34,6 +34,10 @@ under the License.
         A Jar file containing code that uses the java.util.ServiceLoader() API.
     </description>
 
+    <properties>
+        <aries.skip.version.check>true</aries.skip.version.check>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.spifly.examples</groupId>

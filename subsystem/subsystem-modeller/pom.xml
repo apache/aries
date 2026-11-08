@@ -54,8 +54,8 @@
             org.apache.aries.subsystem.modelling*;provide:=true,
             *
         </aries.osgi.import.pkg>
+        <aries.skip.version.check>true</aries.skip.version.check>
 <!--        <lastReleaseVersion>1.0.0</lastReleaseVersion>-->
-        <org.apache.aries.versioning.plugin.version>0.4.0</org.apache.aries.versioning.plugin.version>
 
         <org.apache.aries.blueprint.core.version>1.10.4-SNAPSHOT</org.apache.aries.blueprint.core.version>
         <org.apache.aries.jndi.api.version>1.0.0</org.apache.aries.jndi.api.version>
@@ -120,23 +120,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.aries.versioning</groupId>
-                <artifactId>org.apache.aries.versioning.plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default-verify</id>
-                        <phase>none</phase>
-                        <goals>
-                            <goal>version-check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
 </project>
