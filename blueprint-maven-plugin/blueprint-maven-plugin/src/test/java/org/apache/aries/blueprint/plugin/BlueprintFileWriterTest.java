@@ -686,7 +686,7 @@ public class BlueprintFileWriterTest {
 
         List<String> sources = Arrays.asList(
                 "/schema/example.xsd",
-                "/schema/org/apache/aries/blueprint/blueprint.xsd",
+                "/schema/blueprint.xsd",
                 "/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext.xsd",
                 "/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.1.xsd",
                 "/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.2.xsd",
