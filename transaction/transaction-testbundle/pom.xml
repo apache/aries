@@ -51,7 +51,7 @@
         </aries.osgi.private.pkg>
 
         <javax.transaction-api.version>1.2</javax.transaction-api.version>
-        <org.apache.aries.transaction.blueprint.version>1.0.2</org.apache.aries.transaction.blueprint.version>
+        <org.apache.aries.transaction.blueprint.version>2.3.2-SNAPSHOT</org.apache.aries.transaction.blueprint.version>
     </properties>
 
     <dependencies>

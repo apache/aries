@@ -421,7 +421,7 @@ public class PooledConnectionFactory implements ConnectionFactory {
      * This can be used to warm-up the pool on startup. Notice that any kind of exception
      * happens during startup is logged at WARN level and ignored.
      *
-     * @param createConnectionOnStartup <tt>true</tt> to create a connection on startup
+     * @param createConnectionOnStartup {@code true} to create a connection on startup
      */
     public void setCreateConnectionOnStartup(boolean createConnectionOnStartup) {
         this.createConnectionOnStartup = createConnectionOnStartup;

@@ -59,6 +59,10 @@ public class DummyNamespaceHandlerSet implements NamespaceHandlerSet {
         throw new IllegalStateException("Not implemented");
     }
 
+    public Schema getSchema(Map<String, String> locations) throws SAXException, IOException{
+        throw new IllegalStateException("Not implemented");
+    }
+
     @Override
     public boolean isComplete() {
         return true;
