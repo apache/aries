@@ -57,7 +57,7 @@ under the License.
 
     <properties>
         <aries.osgi.export.pkg />
-        <lastReleaseVersion>1.0.0</lastReleaseVersion>
+        <aries.skip.version.check>true</aries.skip.version.check>
     </properties>
 
     <build>

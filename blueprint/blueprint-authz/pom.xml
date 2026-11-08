@@ -40,9 +40,7 @@
         <aries.osgi.import.pkg>javax.annotation.security,*</aries.osgi.import.pkg>
         <aries.osgi.private.pkg>org.apache.aries.blueprint.authorization.impl</aries.osgi.private.pkg>
         <aries.osgi.activator>org.apache.aries.blueprint.authorization.impl.Activator</aries.osgi.activator>
-
-        <!-- Not exporting any packages -->
-        <aries.skip.version.check>true</aries.skip.version.check>
+        <lastReleaseVersion>1.0.0</lastReleaseVersion>
 
         <blueprint.api.version>1.0.2-SNAPSHOT</blueprint.api.version>
         <blueprint.parser.version>1.6.2-SNAPSHOT</blueprint.parser.version>

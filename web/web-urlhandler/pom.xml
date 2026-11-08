@@ -55,7 +55,6 @@
         </aries.osgi.import>
         <aries.osgi.activator>org.apache.aries.web.converter.impl.Activator</aries.osgi.activator>
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
-        <org.apache.aries.versioning.plugin.version>0.4.0</org.apache.aries.versioning.plugin.version>
 
         <asm.version>9.11.1</asm.version>
     </properties>
@@ -92,23 +91,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.aries.versioning</groupId>
-                <artifactId>org.apache.aries.versioning.plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default-verify</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>version-check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
 </project>

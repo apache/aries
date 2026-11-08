@@ -34,6 +34,10 @@ under the License.
         A Jar providing a service through META-INF/services
     </description>
 
+    <properties>
+        <aries.skip.version.check>true</aries.skip.version.check>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.spifly.examples</groupId>

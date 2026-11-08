@@ -257,15 +257,6 @@
                         <exclude>class org/apache/aries/blueprint/ext/PropertyPlaceholder was not abstract but is changed to be abstract</exclude>
                     </excludes>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>default-verify</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>version-check</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -284,10 +275,6 @@
                         </Require-Capability>
                     </instructions>
                 </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>${maven-release-plugin.version}</version>
             </plugin>
         </plugins>
     </build>
