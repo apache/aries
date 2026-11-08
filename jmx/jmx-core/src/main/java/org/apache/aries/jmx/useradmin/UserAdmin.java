@@ -40,7 +40,7 @@ import org.osgi.service.useradmin.User;
 
 /**
  * <p>
- * <tt>UserAdmin</tt> represents {@link UserAdminMBean} implementation.
+ * {@code UserAdmin} represents {@link UserAdminMBean} implementation.
  * </p>
  * 
  * @see UserAdminMBean

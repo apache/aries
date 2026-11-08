@@ -31,7 +31,7 @@ import org.osgi.service.packageadmin.ExportedPackage;
 
 /**
  * <p>
- * <tt>PackageData</tt>represents PackageType @see {@link PackageStateMBean#PACKAGE_TYPE}.
+ * {@code PackageData}represents PackageType @see {@link PackageStateMBean#PACKAGE_TYPE}.
  * It is a codec for the composite data representing an OSGi ExportedPackage.
  * </p>
  * 

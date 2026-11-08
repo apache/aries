@@ -27,7 +27,7 @@ import org.osgi.service.useradmin.Authorization;
 
 /**
  * <p>
- * <tt>AuthorizationData</tt> represents Authorization Type @see {@link UserAdminMBean#AUTORIZATION_TYPE}.It is a codec
+ * {@code AuthorizationData} represents Authorization Type @see {@link UserAdminMBean#AUTORIZATION_TYPE}.It is a codec
  * for the <code>CompositeData</code> representing an Authorization .
  * </p>
  * 
