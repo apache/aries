@@ -31,7 +31,7 @@ import org.osgi.service.packageadmin.PackageAdmin;
 
 /**
  * <p>
- * <tt>PackageStateMBeanHandler</tt> represents MBeanHandler which
+ * {@code PackageStateMBeanHandler} represents MBeanHandler which
  * holding information about {@link PackageStateMBean}.</p>
  *
  * @see MBeanHandler

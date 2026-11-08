@@ -47,7 +47,7 @@ import org.osgi.jmx.JmxConstants;
 
 /**
  * <p>
- * <tt>PropertyData</tt> represents Property Type @see {@link JmxConstants#PROPERTY_TYPE}. It is a codec for the
+ * {@code PropertyData} represents Property Type @see {@link JmxConstants#PROPERTY_TYPE}. It is a codec for the
  * <code>CompositeData</code> representing a Property with an associated Type and Value.
  * </p>
  *

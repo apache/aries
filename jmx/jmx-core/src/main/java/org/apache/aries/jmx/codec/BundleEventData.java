@@ -34,7 +34,7 @@ import org.osgi.jmx.framework.BundleStateMBean;
 
 /**
  * <p>
- * <tt>BundleEventData</tt> represents BundleEvent Type @see {@link BundleStateMBean#BUNDLE_EVENT_TYPE}. It is a codec
+ * {@code BundleEventData} represents BundleEvent Type @see {@link BundleStateMBean#BUNDLE_EVENT_TYPE}. It is a codec
  * for the <code>CompositeData</code> representing an OSGi BundleEvent.
  * </p>
  * 

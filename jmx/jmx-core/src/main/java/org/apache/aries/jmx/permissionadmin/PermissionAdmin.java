@@ -23,7 +23,7 @@ import org.osgi.service.permissionadmin.PermissionInfo;
 
 /**
  * <p>
- * <tt>PermissionAdmin</tt> represents implementation of PermissionAdminMBean.
+ * {@code PermissionAdmin} represents implementation of PermissionAdminMBean.
  * </p>
  * @see PermissionAdminMBean
  * 

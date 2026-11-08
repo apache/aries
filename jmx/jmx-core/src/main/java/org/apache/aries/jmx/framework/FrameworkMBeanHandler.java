@@ -32,7 +32,7 @@ import org.osgi.service.startlevel.StartLevel;
 
 /**
  * <p>
- * <tt>FrameworkMBeanHandler</tt> represents MBeanHandler which
+ * {@code FrameworkMBeanHandler} represents MBeanHandler which
  * holding information about {@link FrameworkMBean}.</p>
  *
  * @see MBeanHandler

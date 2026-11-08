@@ -24,7 +24,7 @@ import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
- * <p>This class <tt>MBeanServiceTracker</tt> represents {@link ServiceTracker} for {@link MBeanServer}'s
+ * <p>This class {@code MBeanServiceTracker} represents {@link ServiceTracker} for {@link MBeanServer}'s
  * registered as services.
  * Tracking all registered MBeanServers in ServiceRegistry.</p>
  * @see ServiceTracker

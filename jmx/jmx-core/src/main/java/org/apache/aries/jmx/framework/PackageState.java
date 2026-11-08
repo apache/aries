@@ -34,7 +34,7 @@ import org.osgi.service.packageadmin.PackageAdmin;
 
 /**
  * <p>
- * <tt>PackageState</tt> represents implementation of PackageStateMBean.
+ * {@code PackageState} represents implementation of PackageStateMBean.
  * </p>
  * 
  * @see PackageStateMBean

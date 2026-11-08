@@ -44,7 +44,7 @@ import org.osgi.jmx.framework.ServiceStateMBean;
 
 /**
  * <p>
- * <tt>ServiceData</tt> represents Service Type @see {@link ServiceStateMBean#SERVICE_TYPE}. It is a codec for the
+ * {@code ServiceData} represents Service Type @see {@link ServiceStateMBean#SERVICE_TYPE}. It is a codec for the
  * <code>CompositeData</code> representing an OSGi <code>ServiceReference</code>.
  * </p>
  *

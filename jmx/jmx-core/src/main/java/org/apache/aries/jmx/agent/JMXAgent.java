@@ -21,7 +21,7 @@ import javax.management.MBeanServer;
 import org.apache.aries.jmx.MBeanHandler;
 
 /**
- * <p>This <tt>JMXAgent</tt> class represent agent for MBeanServers registered in ServiceRegistry.
+ * <p>This {@code JMXAgent} class represent agent for MBeanServers registered in ServiceRegistry.
  * It's responsible for registration and unregistration MBeans with available MBeanServers.
  * </p>
  *

@@ -37,7 +37,7 @@ import org.osgi.service.useradmin.Role;
 
 /**
  * <p>
- * <tt>RoleData</tt> represents Role Type @see {@link UserAdminMBean#ROLE_TYPE}.It is a codec
+ * {@code RoleData} represents Role Type @see {@link UserAdminMBean#ROLE_TYPE}.It is a codec
  * for the <code>CompositeData</code> representing a Role.
  * </p>
  *
