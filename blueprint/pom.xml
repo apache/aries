@@ -38,7 +38,6 @@
     </description>
 
     <modules>
-        <module>blueprint-api</module>
         <module>blueprint-parser</module>
         <module>blueprint-core</module>
         <module>blueprint-cm</module>

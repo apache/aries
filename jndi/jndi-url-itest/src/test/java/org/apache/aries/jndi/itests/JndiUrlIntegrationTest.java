@@ -160,7 +160,7 @@ public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
                 mavenBundle("org.apache.xbean", "xbean-asm9-shaded").versionAsInProject(),
                 mavenBundle("org.apache.xbean", "xbean-bundleutils").versionAsInProject(),
 
-                mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.api").versionAsInProject(),
+                mavenBundle("org.osgi", "org.osgi.service.blueprint").versionAsInProject(),
                 mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.core").versionAsInProject(),
                 mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy").versionAsInProject(),
                 mavenBundle("org.objenesis", "objenesis").versionAsInProject(),

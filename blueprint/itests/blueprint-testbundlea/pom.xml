@@ -43,8 +43,8 @@
         <aries.osgi.export.pkg>${project.artifactId}*</aries.osgi.export.pkg>
         <aries.skip.version.check>true</aries.skip.version.check>
 
-        <blueprint.api.version>1.0.2-SNAPSHOT</blueprint.api.version>
         <blueprint.core.version>1.10.4-SNAPSHOT</blueprint.core.version>
+        <org.osgi.service.blueprint.version>1.0.2</org.osgi.service.blueprint.version>
         <osgi.core.version>4.3.1</osgi.core.version>
     </properties>
 
@@ -54,9 +54,9 @@
             <artifactId>osgi.core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint.api</artifactId>
-            <version>${blueprint.api.version}</version>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.service.blueprint</artifactId>
+            <version>${org.osgi.service.blueprint.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
