@@ -45,7 +45,7 @@
 
     <properties>
         <aries.skip.version.check>true</aries.skip.version.check>
-        <build-helper-maven-plugin.version>3.7.0</build-helper-maven-plugin.version>
+        <build-helper-maven-plugin.version>3.8.0</build-helper-maven-plugin.version>
     </properties>
 
     <dependencies>
