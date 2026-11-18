@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
-        <version>3.1.0</version>
+        <version>3.2.0</version>
         <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
@@ -48,6 +48,7 @@
         <jansi.version>2.4.3</jansi.version>
         <javax.inject.version>1</javax.inject.version>
         <jline.version>4.7.0</jline.version>
+        <objenesis.version>3.6</objenesis.version>
         <org.apache.aries.blueprint.core.version>1.10.3</org.apache.aries.blueprint.core.version>
         <org.apache.aries.proxy.version>2.0.0</org.apache.aries.proxy.version>
         <org.apache.aries.quiesce.api.version>1.0.1</org.apache.aries.quiesce.api.version>
@@ -131,6 +132,11 @@
                 <groupId>org.apache.aries</groupId>
                 <artifactId>org.apache.aries.util</artifactId>
                 <version>${org.apache.aries.util.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.objenesis</groupId>
+                <artifactId>objenesis</artifactId>
+                <version>${objenesis.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.proxy</groupId>

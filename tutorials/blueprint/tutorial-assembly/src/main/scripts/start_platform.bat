@@ -20,4 +20,4 @@ setlocal
 cd %~dp0
 cd ..\platform
 
-java -jar org.eclipse.osgi-3.23.0.jar -console -clean
+java -jar org.eclipse.osgi-3.23.100.jar -console -clean
