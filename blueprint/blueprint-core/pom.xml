@@ -225,13 +225,10 @@
             <plugin>
                 <groupId>org.apache.aries.versioning</groupId>
                 <artifactId>org.apache.aries.versioning.plugin</artifactId>
-                <version>${org.apache.aries.versioning.plugin.version}</version>
                 <configuration>
                     <excludes>
                         <exclude>method org.apache.aries.blueprint.di.Repository getRepository() has been deleted</exclude>
                         <exclude>class org/apache/aries/blueprint/ext/PropertyPlaceholder was not abstract but is changed to be abstract</exclude>
-                        <exclude>In the package org.osgi.service.blueprint, The schema file has been updated: blueprint.xsd.</exclude>
-                        <exclude>In the package org.apache.aries.blueprint, The schema file has been updated: blueprint.xsd.</exclude>
                     </excludes>
                 </configuration>
             </plugin>
