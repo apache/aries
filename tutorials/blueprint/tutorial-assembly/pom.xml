@@ -89,12 +89,16 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint.api</artifactId>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.service.blueprint</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.objenesis</groupId>
+            <artifactId>objenesis</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>

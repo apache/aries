@@ -49,7 +49,6 @@
         <lastReleaseVersion>1.0.4</lastReleaseVersion>
         -->
 
-        <blueprint.api.version>1.0.2-SNAPSHOT</blueprint.api.version>
         <blueprint.core.version>1.10.4-SNAPSHOT</blueprint.core.version>
         <blueprint.parser.version>1.6.2-SNAPSHOT</blueprint.parser.version>
         <camel.version>2.19.0</camel.version>

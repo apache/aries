@@ -84,7 +84,7 @@ public abstract class AbstractIntegrationTest extends org.apache.aries.itest.Abs
 
                 mavenBundle("org.apache.derby", "derby").versionAsInProject(),
                 mavenBundle("org.apache.aries", "org.apache.aries.util").versionAsInProject(),
-                mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.api").versionAsInProject(),
+                mavenBundle("org.osgi", "org.osgi.service.blueprint").versionAsInProject(),
                 mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.core").versionAsInProject(),
                 mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy").versionAsInProject(),
                 mavenBundle("org.objenesis", "objenesis").versionAsInProject(),

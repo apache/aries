@@ -73,7 +73,7 @@ public class Helper {
                 mvnBundle("org.apache.xbean", "xbean-bundleutils"),
                 mvnBundle("org.apache.xbean", "xbean-finder-shaded"),
                 mvnBundle("org.apache.aries.quiesce", "org.apache.aries.quiesce.api", startBlueprint),
-                mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.api", startBlueprint),
+                mvnBundle("org.osgi", "org.osgi.service.blueprint", startBlueprint),
                 mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.core", startBlueprint),
                 mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.cm", startBlueprint)
         );
